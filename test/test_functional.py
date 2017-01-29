@@ -53,6 +53,13 @@ class TestApp:
 
     def test_post_search(self, client):
         response = post_files(client, '/api/search', {'file': self.image_file})
+        assert "normalized image is saved in image storage"
+        assert "source image metadata is saved in descriptor storage"
+        assert "faces are detected"
+        assert "faces are saved in image storage"
+        assert "faces metadata is saved in descriptor storage"
+        assert "descriptors are calculated for faces and stored in the descriptor storage"
+        assert "similar image faces are returned to user"
         assert response.status_code == 200
 
 
