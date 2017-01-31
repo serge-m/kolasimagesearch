@@ -4,6 +4,8 @@ import numpy as np
 import cv2
 from flask import Flask, request, redirect
 
+from project.face_search.face_processor import FaceProcessor
+
 app = Flask(__name__)
 
 
@@ -22,11 +24,13 @@ def img_from_binary(data):
 def upload_file():
     if request.method == 'POST':
         file_received = request.files['file']
+        file_content = file_received.read()
+        # FaceProcessor().process(file_content)
 
         # img = img_from_file_stream(file_received)
         file_name = uuid.uuid4().hex
         with open(file_name, "wb") as fout:
-            fout.write(file_received.read())
+            fout.write(file_content)
         # faces = face_processor.get_faces(img)
 
         return "file saved to {}".format(file_name)
