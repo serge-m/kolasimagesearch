@@ -1,15 +1,25 @@
+from face_search.impl.face_detector import FaceDetector
+from face_search.impl.feature_extractor import FeatureExtractor
+from face_search.impl.feature_search import FeatureSearch
+from face_search.impl.source_image_metadata import SourceImageMetadata
+from face_search.impl.source_image_storage import SourceImageStorage
+
+
+def normalize(image: bytes) -> bytes:
+    return image
+
+
 class FaceProcessor:
     def __init__(self):
-        pass
+        self.source_image_storage = SourceImageStorage()
+        self.face_detector = FaceDetector()
+        self.feature_extractor = FeatureExtractor()
+        self.feature_search = FeatureSearch()
 
-    def process(self, image: bytes, metadata=None):
+    def process(self, image: bytes, metadata: SourceImageMetadata):
         normalized = normalize(image)
-        path_normalized = save_image(normalized)
-        ref_source = save_source_image_metadata(path_normalized, metadata)
+        ref_source = self.source_image_storage.save_source_image(normalized, metadata)
+        faces = self.face_detector.detect_faces(normalized, ref_source)
+        descriptors = self.feature_extractor.process_faces(faces)
+        return self.feature_search.find_similar(descriptors)
 
-        faces = detect_faces(normalized)
-        for face in faces:
-            path_face = save_image(face.get_image())
-            ref_face = save_face_metadata(path_face, face.get_metadata(), ref_source)
-            face_descriptor = calculate_descriptor_for_face(path_face)
-            save_descriptor(face_descriptor, ref_face)

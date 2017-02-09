@@ -1,9 +1,14 @@
 import json
 from io import BytesIO
 from typing import Dict
+from unittest import mock
 
 import pytest
+from pytest import mark
+
 from face_search.app import app
+from face_search.impl.source_image_metadata import EMPTY_METADATA
+from face_search.test.test_face_processor import expected_search_result
 
 
 @pytest.fixture
@@ -11,7 +16,7 @@ def client(request):
     test_client = app.test_client()
 
     def teardown():
-        pass  # databases and resourses have to be freed at the end. But so far we don't have anything
+        pass  # databases and resources have to be freed at the end. But so far we don't have anything
 
     request.addfinalizer(teardown)
     return test_client
@@ -31,7 +36,7 @@ def post_files(client, url, map_name_to_file: Dict):
 
     map_name_to_file_and_name = {name: (file, "mocked_name_{}".format(name)) for
                                  name, file in map_name_to_file.items()}
-    return client.post(url, data=map_name_to_file_and_name, content_type='multipart/form-data',)
+    return client.post(url, data=map_name_to_file_and_name, content_type='multipart/form-data', )
 
 
 def json_of_response(response):
@@ -39,20 +44,21 @@ def json_of_response(response):
     return json.loads(response.data.decode('utf8'))
 
 
-def read_image(path):
+def read_image(path) -> bytes:
     with open(path, "rb") as f:
-        return BytesIO(f.read())
+        return f.read()
 
 
 class TestApp:
-    image_file = read_image("./test_data/test.jpg")
+    image_data = read_image("./test_data/test.jpg")
 
     def test_dummy(self, client):
         response = client.get('/')
         assert b'Hello, World!' in response.data
 
+    @mark.skip()
     def test_post_search(self, client):
-        response = post_files(client, '/api/search', {'file': self.image_file})
+        response = post_files(client, '/api/search', {'file': BytesIO(self.image_data)})
         assert "normalized image is saved in image storage"
         assert "source image metadata is saved in descriptor storage"
         assert "faces are detected"
@@ -62,5 +68,13 @@ class TestApp:
         assert "similar image faces are returned to user"
         assert response.status_code == 200
 
+    @mock.patch('face_search.app.FaceProcessor', spec=True)
+    def test_post_search_mocked(self, mocked_face_processor, client):
+        mocked_face_processor.return_value.process.return_value = expected_search_result
 
+        response = post_files(client, '/api/search', {'file': BytesIO(self.image_data)})
 
+        mocked_face_processor.assert_called_once_with()
+        mocked_face_processor.return_value.process.assert_called_once_with(self.image_data, EMPTY_METADATA)
+        assert response.status_code == 200
+        assert json_of_response(response) == expected_search_result

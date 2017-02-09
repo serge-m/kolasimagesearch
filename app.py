@@ -1,40 +1,25 @@
-import uuid
+from flask import Flask, request, jsonify
 
-import numpy as np
-import cv2
-from flask import Flask, request, redirect
-
+from face_search.impl.source_image_metadata import SourceImageMetadata
 from project.face_search.face_processor import FaceProcessor
 
 app = Flask(__name__)
 
 
-def img_from_file_stream(f):
-    return img_from_binary(f.read())
-
-
-def img_from_binary(data):
-    arr = np.fromstring(data, dtype='uint8')
-    img = cv2.imdecode(arr, cv2.IMREAD_COLOR)
-    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-    return img
-
-
 @app.route('/api/search', methods=['POST'])
 def upload_file():
     if request.method == 'POST':
-        file_received = request.files['file']
-        file_content = file_received.read()
-        # FaceProcessor().process(file_content)
+        file_content = _get_file_content(request)
+        search_result = FaceProcessor().process(file_content, SourceImageMetadata())
+        return jsonify(search_result)
 
-        # img = img_from_file_stream(file_received)
-        file_name = uuid.uuid4().hex
-        with open(file_name, "wb") as fout:
-            fout.write(file_content)
-        # faces = face_processor.get_faces(img)
-
-        return "file saved to {}".format(file_name)
     return '''Post image to this endpoint'''
+
+
+def _get_file_content(flask_request):
+    file_received = flask_request.files['file']
+    file_content = file_received.read()
+    return file_content
 
 
 @app.route('/')
