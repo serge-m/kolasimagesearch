@@ -8,7 +8,7 @@ from pytest import mark
 
 from face_search.app import app
 from face_search.impl.source_image_metadata import EMPTY_METADATA
-from face_search.test.test_face_processor import expected_search_result
+from face_search.test.test_image_processor import expected_search_result
 
 
 @pytest.fixture
@@ -61,20 +61,17 @@ class TestApp:
         response = post_files(client, '/api/search', {'file': BytesIO(self.image_data)})
         assert "normalized image is saved in image storage"
         assert "source image metadata is saved in descriptor storage"
-        assert "faces are detected"
-        assert "faces are saved in image storage"
-        assert "faces metadata is saved in descriptor storage"
-        assert "descriptors are calculated for faces and stored in the descriptor storage"
-        assert "similar image faces are returned to user"
+        assert "descriptors are calculated for for normalized image and stored in the descriptor storage"
+        assert "similar image are returned to user"
         assert response.status_code == 200
 
-    @mock.patch('face_search.app.FaceProcessor', spec=True)
-    def test_post_search_mocked(self, mocked_face_processor, client):
-        mocked_face_processor.return_value.process.return_value = expected_search_result
+    @mock.patch('face_search.app.ImageProcessor', spec=True)
+    def test_post_search_mocked(self, mocked_image_processor, client):
+        mocked_image_processor.return_value.process.return_value = expected_search_result
 
         response = post_files(client, '/api/search', {'file': BytesIO(self.image_data)})
 
-        mocked_face_processor.assert_called_once_with()
-        mocked_face_processor.return_value.process.assert_called_once_with(self.image_data, EMPTY_METADATA)
+        mocked_image_processor.assert_called_once_with()
+        mocked_image_processor.return_value.process.assert_called_once_with(self.image_data, EMPTY_METADATA)
         assert response.status_code == 200
         assert json_of_response(response) == expected_search_result

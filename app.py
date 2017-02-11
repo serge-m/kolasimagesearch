@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify
 
 from face_search.impl.source_image_metadata import SourceImageMetadata
-from project.face_search.face_processor import FaceProcessor
+from face_search.image_processor import ImageProcessor
 
 app = Flask(__name__)
 
@@ -10,7 +10,7 @@ app = Flask(__name__)
 def upload_file():
     if request.method == 'POST':
         file_content = _get_file_content(request)
-        search_result = FaceProcessor().process(file_content, SourceImageMetadata())
+        search_result = ImageProcessor().process(file_content, SourceImageMetadata())
         return jsonify(search_result)
 
     return '''Post image to this endpoint'''

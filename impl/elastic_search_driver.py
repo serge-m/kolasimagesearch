@@ -11,8 +11,8 @@ class ElasticSearchDriver:
     FILED_ID = "_id"
     FILED_SOURCE = "_source"
 
-    def __init__(self, index: str, type: str, elastic_search: Elasticsearch = None):
-        self._type = type
+    def __init__(self, index: str, doc_type: str, elastic_search: Elasticsearch = None):
+        self._type = doc_type
         self._index = index
         if elastic_search:
             self._es = elastic_search
