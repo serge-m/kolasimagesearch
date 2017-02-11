@@ -1,7 +1,7 @@
-from face_search.impl.feature_extractor import FeatureExtractor
-from face_search.impl.feature_search import FeatureSearch
-from face_search.impl.source_image_metadata import SourceImageMetadata
-from face_search.impl.source_image_storage import SourceImageStorage
+from impl.feature_extractor import FeatureExtractor
+from impl.feature_search import FeatureSearch
+from impl.source_image_metadata import SourceImageMetadata
+from impl.source_image_storage import SourceImageStorage
 
 
 def normalize(image: bytes) -> bytes:

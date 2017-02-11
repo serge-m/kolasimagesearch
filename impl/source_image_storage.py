@@ -1,8 +1,8 @@
-from face_search import config
-from face_search.impl.elastic_search_driver import ElasticSearchDriver
+import config
+from impl.elastic_search_driver import ElasticSearchDriver
 
-from face_search.impl.source_image_metadata import SourceImageMetadata, EMPTY_METADATA
-from image_storage.image_service import ImageService
+from impl.source_image_metadata import SourceImageMetadata, EMPTY_METADATA
+from kolasimagestorage.image_service import ImageService
 
 LOCATION_FIELD = "location"
 

@@ -3,7 +3,7 @@ from unittest import mock
 import pytest
 from elasticsearch import Elasticsearch, ConnectionError
 
-from face_search.impl.elastic_search_driver import ElasticSearchDriver, ElasticSearchDriverException
+from impl.elastic_search_driver import ElasticSearchDriver, ElasticSearchDriverException
 
 index = "index"
 doc_type = "some_doc_type"
@@ -21,7 +21,7 @@ driver = ElasticSearchDriver(index, doc_type, mocked_elastic)
 
 
 class TestElasticSearchDriverTest:
-    @mock.patch('face_search.impl.elastic_search_driver.Elasticsearch', spec=True)
+    @mock.patch('impl.elastic_search_driver.Elasticsearch', spec=True)
     def test_default_driver(self, mocked_elastic):
         mocked_elastic.return_value = mock.create_autospec(Elasticsearch)
 

@@ -1,8 +1,8 @@
 from unittest import mock
 
-from face_search.image_processor import ImageProcessor
-from face_search.impl.descriptor import Descriptor
-from face_search.impl.source_image_metadata import SourceImageMetadata
+from image_processor import ImageProcessor
+from impl.descriptor import Descriptor
+from impl.source_image_metadata import SourceImageMetadata
 
 expected_search_result = {"results": [{"something": "value"}, {"something2": "value2"}]}
 
@@ -14,9 +14,9 @@ class TestImageProcessor:
     metadata = SourceImageMetadata()
     list_descriptors = [Descriptor(), Descriptor(), Descriptor()]
 
-    @mock.patch('face_search.image_processor.FeatureExtractor', spec=True)
-    @mock.patch('face_search.image_processor.FeatureSearch', spec=True)
-    @mock.patch('face_search.image_processor.SourceImageStorage', spec=True)
+    @mock.patch('image_processor.FeatureExtractor', spec=True)
+    @mock.patch('image_processor.FeatureSearch', spec=True)
+    @mock.patch('image_processor.SourceImageStorage', spec=True)
     def test1(self, source_image_storage, feature_search, feature_extractor):
         source_image_storage.return_value.save_source_image.return_value = self.ref_source
         feature_extractor.return_value.extract_features.return_value = self.list_descriptors

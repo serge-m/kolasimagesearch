@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify
 
-from face_search.impl.source_image_metadata import SourceImageMetadata
-from face_search.image_processor import ImageProcessor
+from impl.source_image_metadata import SourceImageMetadata
+from image_processor import ImageProcessor
 
 app = Flask(__name__)
 

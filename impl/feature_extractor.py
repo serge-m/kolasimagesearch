@@ -1,6 +1,6 @@
 from typing import List
 
-from face_search.impl.descriptor import Descriptor
+from impl.descriptor import Descriptor
 
 
 def save_image(param):

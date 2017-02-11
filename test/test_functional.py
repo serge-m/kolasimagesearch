@@ -6,9 +6,9 @@ from unittest import mock
 import pytest
 from pytest import mark
 
-from face_search.app import app
-from face_search.impl.source_image_metadata import EMPTY_METADATA
-from face_search.test.test_image_processor import expected_search_result
+from app import app
+from impl.source_image_metadata import EMPTY_METADATA
+from test.test_image_processor import expected_search_result
 
 
 @pytest.fixture
@@ -65,7 +65,7 @@ class TestApp:
         assert "similar image are returned to user"
         assert response.status_code == 200
 
-    @mock.patch('face_search.app.ImageProcessor', spec=True)
+    @mock.patch('app.ImageProcessor', spec=True)
     def test_post_search_mocked(self, mocked_image_processor, client):
         mocked_image_processor.return_value.process.return_value = expected_search_result
 

@@ -1,4 +1,4 @@
-from face_search import config
+import config
 
 from elasticsearch import Elasticsearch, ElasticsearchException
 
