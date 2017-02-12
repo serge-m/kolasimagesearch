@@ -12,7 +12,7 @@ class TestImageProcessor:
     expected_normalized = image
     ref_source = "reference to stored source image"
     metadata = SourceImageMetadata()
-    list_descriptors = [Descriptor(), Descriptor(), Descriptor()]
+    list_descriptors = [Descriptor([1]), Descriptor([2]), Descriptor([3])]
 
     @mock.patch('image_processor.FeatureExtractor', spec=True)
     @mock.patch('image_processor.FeatureSearch', spec=True)
