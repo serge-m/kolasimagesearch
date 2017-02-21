@@ -2,8 +2,10 @@ from typing import List
 
 import numpy as np
 
+import config
 from image_encoder import ImageEncoder
 from impl.descriptor import Descriptor
+from impl.elastic_search_driver import ElasticSearchDriver
 from kolasimagesearch.impl.feature_extractor import FeatureExtractor
 
 
@@ -59,10 +61,18 @@ def calculate_histogram(image: np.ndarray) -> Descriptor:
 
 class HistogramBasedFeatureExtractor(FeatureExtractor):
     def __init__(self):
+        self._es = ElasticSearchDriver(index=config.ELASTIC_DESCRIPTOR_INDEX,
+                                       doc_type=config.ELASTIC_DESCRIPTOR_TYPE)
         self._image_encoder = ImageEncoder(image_format="jpeg")
 
     def extract_features(self, image: bytes, ref_source: str) -> List[Descriptor]:
         decoded = self._image_encoder.binary_to_array(image)
         subimages = extract_subimages(decoded)
         descriptors = [calculate_histogram(subimage) for subimage in subimages]
+        for descriptor in descriptors:
+            self.save_descriptor(descriptor)
         return descriptors
+
+    def save_descriptor(self, descriptor):
+        pass
+
