@@ -7,6 +7,7 @@ from kolasimagestorage.image_service import ImageService
 LOCATION_FIELD = "location"
 
 
+# noinspection PyUnusedLocal
 def create_doc(metadata: SourceImageMetadata, path_image: str) -> dict:
     return {
         LOCATION_FIELD: path_image
