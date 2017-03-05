@@ -5,10 +5,10 @@ import numpy as np
 from image_encoder import ImageEncoder
 from impl.descriptor import Descriptor
 from impl.descriptor_repository import RegionRepository
-from impl.feature_extractor import FeatureExtractor
+from impl.feature_engine.feature_extractor import FeatureExtractor
+from impl.feature_engine.subimage_extractor import SubimageExtractor
 from impl.image_region import ImageRegion
-from impl.subimage_extractor import SubimageExtractor
-from kolasimagesearch.impl.feature_engine import FeatureEngine
+from kolasimagesearch.impl.feature_engine.feature_engine import FeatureEngine
 
 
 class SubImagesProcessor:

@@ -2,9 +2,9 @@ from unittest import mock
 
 from image_processor import ImageProcessor
 from impl.descriptor import Descriptor
-from impl.feature_extractor import HistogramFeatureExtractor
+from impl.feature_engine.feature_extractor import HistogramFeatureExtractor
+from impl.feature_engine.subimage_extractor import VerticalSplit
 from impl.source_image_metadata import SourceImageMetadata
-from impl.subimage_extractor import VerticalSplit
 
 expected_search_result = {"results": [{"something": "value"}, {"something2": "value2"}]}
 
@@ -16,7 +16,7 @@ class TestImageProcessor:
     metadata = SourceImageMetadata()
     list_descriptors = [Descriptor([1]), Descriptor([2]), Descriptor([3])]
 
-    @mock.patch('image_processor.SubImageFeatureEngine', spec=True)
+    @mock.patch('image_processor.SubimageFeatureEngine', spec=True)
     @mock.patch('image_processor.FeatureSearch', spec=True)
     @mock.patch('image_processor.SourceImageStorage', spec=True)
     def test1(self, source_image_storage, feature_search, feature_engine):

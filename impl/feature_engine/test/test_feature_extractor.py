@@ -5,7 +5,7 @@ import numpy as np
 import pytest
 
 from impl.descriptor import Descriptor
-from impl.feature_extractor import HistogramFeatureExtractor, calculate_histogram_1d, \
+from impl.feature_engine.feature_extractor import HistogramFeatureExtractor, calculate_histogram_1d, \
     HistogramBasedFeatureExtractorException
 
 whole_image = np.random.random(size=[10, 20, 3])
@@ -43,17 +43,17 @@ class TestCalculateHistogram:
         assert histo.vector.shape == (256 * 3,)
 
     def test_for_3_channel(self):
-        with mock.patch('impl.feature_extractor.calculate_histogram_1d', new=self.mocked_calc_histo_1d):
+        with mock.patch('impl.feature_engine.feature_extractor.calculate_histogram_1d', new=self.mocked_calc_histo_1d):
             histo = HistogramFeatureExtractor().calculate(self.test_image)
         assert np.allclose(histo.vector, [1, 2, 3, 4, 5, 6])
 
     def test_for_1_channel(self):
-        with mock.patch('impl.feature_extractor.calculate_histogram_1d', new=self.mocked_calc_histo_1d):
+        with mock.patch('impl.feature_engine.feature_extractor.calculate_histogram_1d', new=self.mocked_calc_histo_1d):
             histo = HistogramFeatureExtractor().calculate(self.test_image_1d)
         assert np.allclose(histo.vector, [1, 2, 1, 2, 1, 2])
 
     def test_for_2d_image(self):
-        with mock.patch('impl.feature_extractor.calculate_histogram_1d', new=self.mocked_calc_histo_1d):
+        with mock.patch('impl.feature_engine.feature_extractor.calculate_histogram_1d', new=self.mocked_calc_histo_1d):
             histo = HistogramFeatureExtractor().calculate(self.channel1)
         assert np.allclose(histo.vector, [1, 2, 1, 2, 1, 2])
 

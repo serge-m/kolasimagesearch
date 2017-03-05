@@ -13,6 +13,7 @@ class ImageRegionSerializer:
         return {
             "source_id": image_region.source_image_reference,
             "descriptor": list(image_region.descriptor.vector),
+            # TODO: add quantized fields here
         }
 
 

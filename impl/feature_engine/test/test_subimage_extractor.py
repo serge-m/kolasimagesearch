@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 
 from image_encoder import ImageEncoder
-from impl.subimage_extractor import VerticalSplit, SubimageExtractorException
+from impl.feature_engine.subimage_extractor import VerticalSplit, SubimageExtractorException
 
 
 def _prepare_test_image():

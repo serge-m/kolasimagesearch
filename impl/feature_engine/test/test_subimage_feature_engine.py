@@ -4,10 +4,10 @@ import numpy as np
 
 from image_encoder import ImageEncoder
 from impl.descriptor import Descriptor
-from impl.feature_extractor import FeatureExtractor
+from impl.feature_engine.feature_extractor import FeatureExtractor
+from impl.feature_engine.subimage_extractor import SubimageExtractor
+from impl.feature_engine.subimage_feature_engine import SubimageFeatureEngine
 from impl.image_region import ImageRegion
-from impl.subimage_extractor import SubimageExtractor
-from impl.subimage_feature_engine import SubimageFeatureEngine
 
 
 def _prepare_test_image():
@@ -42,8 +42,8 @@ class TestSubimageFeatureEngine:
         extractor = SubimageFeatureEngine(FeatureExtractor, SubimageExtractor)
         assert hasattr(extractor, 'extract_features')
 
-    @mock.patch('impl.subimage_feature_engine.ImageEncoder', spec=True)
-    @mock.patch('impl.subimage_feature_engine.SubImagesProcessor', spec=True)
+    @mock.patch('impl.feature_engine.subimage_feature_engine.ImageEncoder', spec=True)
+    @mock.patch('impl.feature_engine.subimage_feature_engine.SubImagesProcessor', spec=True)
     def test_steps(self, mocked_subimage_processor, mocked_image_encoder):
         mocked_image_encoder.return_value.binary_to_array.return_value = whole_image
         mocked_subimage_processor.return_value.process.return_value = self.image_regions
