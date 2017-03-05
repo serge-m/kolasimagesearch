@@ -1,4 +1,5 @@
 import json
+import os
 from io import BytesIO
 from typing import Dict
 from unittest import mock
@@ -10,6 +11,7 @@ from app import app
 from impl.domain.source_image_metadata import EMPTY_METADATA
 from test.test_image_processor import expected_search_result
 
+current_dir_path = os.path.dirname(os.path.realpath(__file__))
 
 @pytest.fixture
 def client(request):
@@ -50,7 +52,7 @@ def read_image(path) -> bytes:
 
 
 class TestApp:
-    image_data = read_image("./test_data/test.jpg")
+    image_data = read_image(os.path.join(current_dir_path, "test_data/test.jpg"))
 
     def test_dummy(self, client):
         response = client.get('/')

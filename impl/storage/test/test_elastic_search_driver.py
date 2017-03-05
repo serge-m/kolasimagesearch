@@ -21,7 +21,7 @@ driver = ElasticSearchDriver(index, doc_type, mocked_elastic)
 
 
 class TestElasticSearchDriverTest:
-    @mock.patch('impl.elastic_search_driver.Elasticsearch', spec=True)
+    @mock.patch('impl.storage.elastic_search_driver.Elasticsearch', spec=True)
     def test_default_driver(self, mocked_elastic):
         mocked_elastic.return_value = mock.create_autospec(Elasticsearch)
 

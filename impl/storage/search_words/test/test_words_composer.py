@@ -16,16 +16,24 @@ class TestWordsComposer:
     def test_composes_max_array(self):
         val1 = self.number_of_levels_large - 1
         val2 = self.number_of_levels_large - 1
+
         composer = WordsComposer(1, 2, self.number_of_levels_large)
         result = composer.compose(np.array([val1, val2]))
+
         assert np.array_equal(result, [val1 + self.number_of_levels_large * val2])
 
     def test_composes_multiple_words(self):
+        value1 = 1
+        value2a = 0
+        value2b = 2
+        value3 = 3
+
         composer = WordsComposer(3, 2, self.number_of_levels)
-        result = composer.compose(np.array([1, 1, 0, 0, 3, 3]))
-        assert np.array_equal(result, [1 + self.number_of_levels * 1,
-                                       0 + self.number_of_levels * 0,
-                                       3 + self.number_of_levels * 3,
+        result = composer.compose(np.array([value1, value1, value2a, value2b, value3, value3]))
+
+        assert np.array_equal(result, [value1 + self.number_of_levels * value1,
+                                       value2a + self.number_of_levels * value2b,
+                                       value3 + self.number_of_levels * value3,
                                        ])
 
     def test_fails_on_too_large_shape(self):

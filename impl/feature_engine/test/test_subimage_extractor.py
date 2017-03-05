@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from image_encoder import ImageEncoder
+from kolasimagestorage.image_encoder import ImageEncoder
 from impl.feature_engine.subimage_extractor import VerticalSplit, SubimageExtractorException
 
 

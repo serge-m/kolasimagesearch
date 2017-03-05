@@ -2,7 +2,7 @@ from unittest import mock
 
 import numpy as np
 
-from image_encoder import ImageEncoder
+from kolasimagestorage.image_encoder import ImageEncoder
 from impl.domain.descriptor import Descriptor
 from impl.domain.image_region import ImageRegion
 from impl.feature_engine.feature_extractor import FeatureExtractor
