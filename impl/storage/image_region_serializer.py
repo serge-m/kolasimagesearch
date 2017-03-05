@@ -1,16 +1,16 @@
 from typing import Dict
 
 from impl.domain.image_region import ImageRegion
-from impl.storage.search_words.search_words_builder import SearchWordsBuilder
+from impl.storage.search_words.search_terms_creator import SearchTermsCreator
 
 
 class ImageRegionSerializer:
     def __init__(self):
-        self._search_words_builder = SearchWordsBuilder()
+        self._search_terms_creator = SearchTermsCreator()
 
     def create_doc(self, image_region: ImageRegion) -> Dict[str, object]:
         base = self._create_base(image_region)
-        quantized_words = self._search_words_builder.get_dictionary_of_words(image_region.descriptor)
+        quantized_words = self._search_terms_creator.get_dictionary_of_words(image_region.descriptor)
         return dict(**base, **quantized_words)
 
     @staticmethod

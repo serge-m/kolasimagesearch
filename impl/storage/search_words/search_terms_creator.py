@@ -13,7 +13,7 @@ class SearchWordsBuilderException(Exception):
     pass
 
 
-class SearchWordsBuilder:
+class SearchTermsCreator:
     _key_template = "word_{:04d}"
 
     def __init__(self):
