@@ -2,25 +2,25 @@ from unittest import mock
 
 import pytest
 
-from impl.source_image_metadata import EMPTY_METADATA
-from impl.source_image_storage import SourceImageStorage
+from impl.domain.source_image_metadata import EMPTY_METADATA
+from impl.storage.source_image_storage import SourceImageStorage
 
 file_service_url = "some/url"
 index_name = "ELASTIC_SOURCE_IMAGES_INDEX11"
 doc_type = "ELASTIC_SOURCE_IMAGES_TYPE111"
 
 
-@mock.patch('impl.source_image_storage.config.FILE_SERVICE_URL', new=file_service_url)
-@mock.patch('impl.source_image_storage.config.ELASTIC_SOURCE_IMAGES_INDEX', new=index_name)
-@mock.patch('impl.source_image_storage.config.ELASTIC_SOURCE_IMAGES_TYPE', new=doc_type)
+@mock.patch('impl.storage.source_image_storage.config.FILE_SERVICE_URL', new=file_service_url)
+@mock.patch('impl.storage.source_image_storage.config.ELASTIC_SOURCE_IMAGES_INDEX', new=index_name)
+@mock.patch('impl.storage.source_image_storage.config.ELASTIC_SOURCE_IMAGES_TYPE', new=doc_type)
 class TestSourceImageStorage:
     image = b"asdasdasdasd"
     metadata = EMPTY_METADATA
     image_location = "some_location"
     source_image_meta_id = "some-meta-id"
 
-    @mock.patch('impl.source_image_storage.ImageService', spec=True)
-    @mock.patch('impl.source_image_storage.ElasticSearchDriver', spec=True)
+    @mock.patch('impl.storage.source_image_storage.ImageService', spec=True)
+    @mock.patch('impl.storage.source_image_storage.ElasticSearchDriver', spec=True)
     def test_saving(self, mocked_elastic_driver, mocked_image_service):
         mocked_image_service.return_value.put_encoded.return_value = self.image_location
         mocked_elastic_driver.return_value.index.return_value = self.source_image_meta_id
@@ -36,7 +36,7 @@ class TestSourceImageStorage:
 
         assert reference == self.source_image_meta_id
 
-    @mock.patch('impl.source_image_storage.ImageService', spec=True)
+    @mock.patch('impl.storage.source_image_storage.ImageService', spec=True)
     def test_raises_non_implemented(self, mocked_image_service):
         mocked_image_service.return_value.put_encoded.return_value = self.image_location
 

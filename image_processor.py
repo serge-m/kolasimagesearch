@@ -1,9 +1,9 @@
+from impl.domain.source_image_metadata import SourceImageMetadata
 from impl.feature_engine.feature_extractor import HistogramFeatureExtractor
 from impl.feature_engine.subimage_extractor import VerticalSplit
 from impl.feature_engine.subimage_feature_engine import SubimageFeatureEngine
 from impl.feature_search import FeatureSearch
-from impl.source_image_metadata import SourceImageMetadata
-from impl.source_image_storage import SourceImageStorage
+from impl.storage.source_image_storage import SourceImageStorage
 
 
 def normalize(image: bytes) -> bytes:

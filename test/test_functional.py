@@ -7,7 +7,7 @@ import pytest
 from pytest import mark
 
 from app import app
-from impl.source_image_metadata import EMPTY_METADATA
+from impl.domain.source_image_metadata import EMPTY_METADATA
 from test.test_image_processor import expected_search_result
 
 

@@ -3,7 +3,7 @@ from unittest import mock
 import pytest
 from elasticsearch import Elasticsearch, ConnectionError
 
-from impl.elastic_search_driver import ElasticSearchDriver, ElasticSearchDriverException
+from impl.storage.elastic_search_driver import ElasticSearchDriver, ElasticSearchDriverException
 
 index = "index"
 doc_type = "some_doc_type"

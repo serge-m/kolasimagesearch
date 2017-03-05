@@ -3,11 +3,11 @@ from typing import List
 import numpy as np
 
 from image_encoder import ImageEncoder
-from impl.descriptor import Descriptor
-from impl.descriptor_repository import RegionRepository
+from impl.domain.descriptor import Descriptor
+from impl.domain.image_region import ImageRegion
 from impl.feature_engine.feature_extractor import FeatureExtractor
 from impl.feature_engine.subimage_extractor import SubimageExtractor
-from impl.image_region import ImageRegion
+from impl.storage.region_repository import RegionRepository
 from kolasimagesearch.impl.feature_engine.feature_engine import FeatureEngine
 
 

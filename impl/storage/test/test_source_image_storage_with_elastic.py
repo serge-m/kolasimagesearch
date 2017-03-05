@@ -5,8 +5,8 @@ from unittest import mock
 import pytest
 from elasticsearch import Elasticsearch, RequestError, NotFoundError
 
-from impl.source_image_metadata import EMPTY_METADATA
-from impl.source_image_storage import SourceImageStorage, LOCATION_FIELD
+from impl.domain.source_image_metadata import EMPTY_METADATA
+from impl.storage.source_image_storage import SourceImageStorage, LOCATION_FIELD
 
 INDEX_NAME = 'test_environment_{}'.format(hashlib.md5(os.urandom(128)).hexdigest()[:12])
 

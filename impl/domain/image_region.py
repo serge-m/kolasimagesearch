@@ -1,4 +1,4 @@
-from impl.descriptor import Descriptor
+from impl.domain.descriptor import Descriptor
 
 
 class ImageRegion:

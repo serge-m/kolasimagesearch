@@ -1,4 +1,3 @@
-
 class SourceImageMetadata:
     def __init__(self):
         self._path = "some_path"

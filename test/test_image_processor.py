@@ -1,10 +1,10 @@
 from unittest import mock
 
 from image_processor import ImageProcessor
-from impl.descriptor import Descriptor
+from impl.domain.descriptor import Descriptor
+from impl.domain.source_image_metadata import SourceImageMetadata
 from impl.feature_engine.feature_extractor import HistogramFeatureExtractor
 from impl.feature_engine.subimage_extractor import VerticalSplit
-from impl.source_image_metadata import SourceImageMetadata
 
 expected_search_result = {"results": [{"something": "value"}, {"something2": "value2"}]}
 

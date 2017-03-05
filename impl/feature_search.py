@@ -1,6 +1,6 @@
 from typing import List
 
-from impl.descriptor import Descriptor
+from impl.domain.descriptor import Descriptor
 
 
 class FeatureSearch:

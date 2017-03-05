@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify
 
-from impl.source_image_metadata import SourceImageMetadata
 from image_processor import ImageProcessor
+from impl.domain.source_image_metadata import SourceImageMetadata
 
 app = Flask(__name__)
 

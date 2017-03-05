@@ -2,7 +2,7 @@ from typing import List
 
 import numpy as np
 
-from impl.descriptor import Descriptor
+from impl.domain.descriptor import Descriptor
 
 
 class HistogramBasedFeatureExtractorException(RuntimeError):

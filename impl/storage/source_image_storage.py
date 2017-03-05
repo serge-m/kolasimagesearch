@@ -1,7 +1,6 @@
 import config
-from impl.elastic_search_driver import ElasticSearchDriver
-
-from impl.source_image_metadata import SourceImageMetadata, EMPTY_METADATA
+from impl.domain.source_image_metadata import SourceImageMetadata, EMPTY_METADATA
+from impl.storage.elastic_search_driver import ElasticSearchDriver
 from kolasimagestorage.image_service import ImageService
 
 LOCATION_FIELD = "location"
