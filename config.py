@@ -1,4 +1,4 @@
-FILE_SERVICE_URL = "localhost:"
+FILE_SERVICE_URL = "http://localhost:9333/"
 ELASTIC_URL = "http://localhost:9200"
 ELASTIC_SOURCE_IMAGES_INDEX = "index"
 ELASTIC_SOURCE_IMAGES_TYPE = "sources"

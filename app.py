@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify
 
 from image_processor import ImageProcessor
-from impl.domain.source_image_metadata import SourceImageMetadata
+from impl.domain.source_image_metadata import EMPTY_METADATA
 
 app = Flask(__name__)
 
@@ -10,7 +10,7 @@ app = Flask(__name__)
 def upload_file():
     if request.method == 'POST':
         file_content = _get_file_content(request)
-        search_result = ImageProcessor().process(file_content, SourceImageMetadata())
+        search_result = ImageProcessor().process(file_content, EMPTY_METADATA)
         return jsonify(search_result)
 
     return '''Post image to this endpoint'''

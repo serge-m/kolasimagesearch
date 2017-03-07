@@ -48,3 +48,8 @@ class HistogramFeatureExtractor(FeatureExtractor):
         descriptors_1d = [calculate_histogram_1d(channel).vector for channel in channels]
         descriptor = Descriptor(vector=np.hstack(descriptors_1d))
         return descriptor
+
+    def __eq__(self, other):
+        if isinstance(other, HistogramFeatureExtractor):
+            return True
+        return False

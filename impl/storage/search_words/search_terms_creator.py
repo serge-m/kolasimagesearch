@@ -25,4 +25,4 @@ class SearchTermsCreator:
     def get_dictionary_of_words(self, descriptor: Descriptor) -> Dict[str, int]:
         quantized_vector = self.quantizer.quantize_vector(descriptor.vector)
         composed_values = self.words_composer.compose(quantized_vector)
-        return {self._key_template.format(index): value for index, value in enumerate(composed_values)}
+        return {self._key_template.format(index): int(value) for index, value in enumerate(composed_values)}

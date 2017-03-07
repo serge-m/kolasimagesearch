@@ -22,3 +22,11 @@ class VerticalSplit(SubimageExtractor):
         left_part = image[:, :width // 2]
         right_part = image[:, width // 2:]
         return [left_part, right_part]
+
+    def __eq__(self, other):
+        if isinstance(other, VerticalSplit):
+            return True
+        return False
+
+
+

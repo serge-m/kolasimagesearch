@@ -13,7 +13,7 @@ def normalize(image: bytes) -> bytes:
 class ImageProcessor:
     def __init__(self):
         self.source_image_storage = SourceImageStorage()
-        self.feature_engine = SubimageFeatureEngine(HistogramFeatureExtractor, VerticalSplit)
+        self.feature_engine = SubimageFeatureEngine(HistogramFeatureExtractor(), VerticalSplit())
         self.feature_search = FeatureSearch()
 
     def process(self, image: bytes, metadata: SourceImageMetadata):

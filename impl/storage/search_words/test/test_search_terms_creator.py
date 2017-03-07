@@ -34,6 +34,7 @@ class TestSearchTermsCreator:
         words = quantizer.get_dictionary_of_words(self.descriptor)
 
         assert isinstance(words, dict)
+        assert all([type(value) == int for value in words.values()])
         assert words == {"word_0000": self.composed_values[0],
                          "word_0001": self.composed_values[1],
                          "word_0002": self.composed_values[2],
