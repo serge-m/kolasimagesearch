@@ -43,3 +43,7 @@ class TestWordsComposer:
     def test_fails_on_too_small_shape(self):
         with pytest.raises(WordsComposerException):
             WordsComposer(1, 2, 3).compose(np.array([0]))
+
+    def test_fails_on_overflow(self):
+        with pytest.raises(WordsComposerException):
+            WordsComposer(1, 64, 2)  # 2**64 is too much

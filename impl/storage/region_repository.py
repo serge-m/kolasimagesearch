@@ -12,5 +12,6 @@ class RegionRepository:
         self._serializer = ImageRegionSerializer()
 
     def save(self, image_region: ImageRegion):
-        image_region_elastic_id = self._es.index(self._serializer.create_doc(image_region))
+        doc = self._serializer.create_doc(image_region)
+        image_region_elastic_id = self._es.index(doc)
         return image_region_elastic_id

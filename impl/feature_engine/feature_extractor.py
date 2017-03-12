@@ -16,9 +16,10 @@ def calculate_histogram_1d(image: np.array) -> Descriptor:
     if not shape_is_good(image):
         raise HistogramBasedFeatureExtractorException("only 1 channel images are supported here")
 
-    image_clipped = np.clip(image, 0, 256)
-    h = np.histogram(a=image_clipped, bins=256, range=[0, 256], density=True)
-    return Descriptor(vector=h[0])
+    image_clipped = np.clip(image, 0, 255)
+    h = np.histogram(a=image_clipped, bins=16, range=[0, 256])[0]
+    histogram_normalized = h / image_clipped.size
+    return Descriptor(vector=histogram_normalized)
 
 
 def get_channels(image) -> List[np.ndarray]:
@@ -43,10 +44,14 @@ class FeatureExtractor:
 
 
 class HistogramFeatureExtractor(FeatureExtractor):
+    _SCALE_FACTOR = 16.
+
     def calculate(self, image: np.ndarray) -> Descriptor:
         channels = get_channels(image)
         descriptors_1d = [calculate_histogram_1d(channel).vector for channel in channels]
-        descriptor = Descriptor(vector=np.hstack(descriptors_1d))
+        vector = np.hstack(descriptors_1d)
+        vector_clipped = np.clip(vector * self._SCALE_FACTOR, 0.0, 1.0)
+        descriptor = Descriptor(vector=vector_clipped)
         return descriptor
 
     def __eq__(self, other):

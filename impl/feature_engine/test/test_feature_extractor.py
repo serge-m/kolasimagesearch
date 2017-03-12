@@ -9,6 +9,7 @@ from impl.feature_engine.feature_extractor import HistogramFeatureExtractor, cal
     HistogramBasedFeatureExtractorException
 
 whole_image = np.random.random(size=[10, 20, 3])
+EXPECTED_1D_HISTO_LENGTH = 16
 
 
 class MockingNPFunction:
@@ -23,15 +24,15 @@ class MockingNPFunction:
         raise AssertionError("Argument not matched")
 
 
-class TestCalculateHistogram:
+class TestHistogramFeatureExtractor:
     channel1 = np.arange(12).reshape([3, 4])
     channel2 = np.arange(100, 112).reshape([3, 4])
     channel3 = np.array([100, ] * 6 + [200, ] * 6).reshape([3, 4])
     test_image = np.stack([channel1, channel2, channel3], axis=2)
     test_image_1d = np.stack([channel1], axis=2)
 
-    descr1 = Descriptor([1, 2])
-    descr2 = Descriptor([3, 4])
+    descr1 = Descriptor([0.1 / 16, 1 / 16])
+    descr2 = Descriptor([0.2 / 16, 4])
     descr3 = Descriptor([5, 6])
 
     mocked_calc_histo_1d = MockingNPFunction([channel1, channel2, channel3],
@@ -40,42 +41,42 @@ class TestCalculateHistogram:
     def test_calculate_histogram_shape(self):
         histo = HistogramFeatureExtractor().calculate(self.test_image)
         assert isinstance(histo, Descriptor)
-        assert histo.vector.shape == (256 * 3,)
+        assert histo.vector.shape == (EXPECTED_1D_HISTO_LENGTH * 3,)
 
     def test_for_3_channel(self):
         with mock.patch('impl.feature_engine.feature_extractor.calculate_histogram_1d', new=self.mocked_calc_histo_1d):
             histo = HistogramFeatureExtractor().calculate(self.test_image)
-        assert np.allclose(histo.vector, [1, 2, 3, 4, 5, 6])
+        assert np.allclose(histo.vector, np.array([0.1, 1, 0.2, 1, 1, 1]))
 
     def test_for_1_channel(self):
         with mock.patch('impl.feature_engine.feature_extractor.calculate_histogram_1d', new=self.mocked_calc_histo_1d):
             histo = HistogramFeatureExtractor().calculate(self.test_image_1d)
-        assert np.allclose(histo.vector, [1, 2, 1, 2, 1, 2])
+        assert np.allclose(histo.vector, [0.1, 1] * 3)
 
     def test_for_2d_image(self):
         with mock.patch('impl.feature_engine.feature_extractor.calculate_histogram_1d', new=self.mocked_calc_histo_1d):
             histo = HistogramFeatureExtractor().calculate(self.channel1)
-        assert np.allclose(histo.vector, [1, 2, 1, 2, 1, 2])
+        assert np.allclose(histo.vector, [0.1, 1] * 3)
 
 
 class TestCalculateHistogram1D:
     channel1 = np.arange(12).reshape([3, 4])
-    expected_histo1 = np.zeros(shape=[256])
-    expected_histo1[:12] = 1 / 12
+    expected_histo1 = np.zeros(shape=[EXPECTED_1D_HISTO_LENGTH])
+    expected_histo1[0] = 1
 
     channel2 = np.arange(100, 112).reshape([3, 4])
-    expected_histo2 = np.zeros(shape=[256])
-    expected_histo2[100:112] = 1 / 12
+    expected_histo2 = np.zeros(shape=[EXPECTED_1D_HISTO_LENGTH])
+    expected_histo2[EXPECTED_1D_HISTO_LENGTH * 100 // 256] = 1
 
     channel3 = np.array([100, ] * 6 + [200, ] * 6).reshape([3, 4])
-    expected_histo3 = np.zeros(shape=[256])
-    expected_histo3[100] = 6 / 12
-    expected_histo3[200] = 6 / 12
+    expected_histo3 = np.zeros(shape=[EXPECTED_1D_HISTO_LENGTH])
+    expected_histo3[EXPECTED_1D_HISTO_LENGTH * 100 // 256] = 0.5
+    expected_histo3[EXPECTED_1D_HISTO_LENGTH * 200 // 256] = 0.5
 
-    channel4 = np.array([-100, ] * 6 + [1000, ] * 6).reshape([3, 4])
-    expected_histo4 = np.zeros(shape=[256])
-    expected_histo4[0] = 6 / 12
-    expected_histo4[255] = 6 / 12
+    channel4 = np.array([-100, ] * 4 + [1000, ] * 8).reshape([3, 4])
+    expected_histo4 = np.zeros(shape=[EXPECTED_1D_HISTO_LENGTH])
+    expected_histo4[0] = 1 / 3
+    expected_histo4[-1] = 2 / 3
 
     def test_return_type(self):
         descriptor = calculate_histogram_1d(self.channel1)
