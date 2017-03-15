@@ -19,3 +19,6 @@ class ImageRegionSerializer:
             "source_id": image_region.source_image_reference,
             "descriptor": list(image_region.descriptor.vector),
         }
+
+    def get_words(self, image_region: ImageRegion) -> Dict[str, object]:
+        return self._search_terms_creator.get_dictionary_of_words(image_region.descriptor)

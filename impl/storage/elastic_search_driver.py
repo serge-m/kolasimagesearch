@@ -1,3 +1,5 @@
+from typing import Dict
+
 import config
 
 from elasticsearch import Elasticsearch, ElasticsearchException
@@ -18,6 +20,7 @@ class ElasticSearchDriver:
             self._es = elastic_search
         else:
             self._es = Elasticsearch(hosts=[config.ELASTIC_URL])
+        self._timeout = 10
 
     def index(self, doc: dict) -> str:
         try:
@@ -40,3 +43,18 @@ class ElasticSearchDriver:
             return response[self.FILED_SOURCE]
         except KeyError as e:
             raise ElasticSearchDriverException() from e
+
+    def search_by_words(self, words: Dict[str, object], size: int = 10):
+        # TODO: added unit tests and integration tests
+        should = [{'term': {word: value}} for word, value in words]
+
+        return self._es.search(index=self._index,
+                               doc_type=self._type,
+                               body={
+                                   'query': {
+                                       'bool': {'should': should}
+                                   },
+                                   '_source': {'excludes': list(words.keys())}
+                               },
+                               size=size,
+                               timeout=self._timeout)['hits']['hits']
