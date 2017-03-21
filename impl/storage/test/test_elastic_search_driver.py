@@ -20,7 +20,7 @@ mocked_elastic = mock.create_autospec(Elasticsearch)
 driver = ElasticSearchDriver(index, doc_type, mocked_elastic)
 
 
-class TestElasticSearchDriverTest:
+class TestElasticSearchDriver:
     @mock.patch('impl.storage.elastic_search_driver.Elasticsearch', spec=True)
     def test_default_driver(self, mocked_elastic):
         mocked_elastic.return_value = mock.create_autospec(Elasticsearch)
@@ -67,3 +67,40 @@ class TestElasticSearchDriverTest:
         mocked_elastic.get.return_value = wrong_get_response
         with pytest.raises(ElasticSearchDriverException):
             driver.get_doc(mocked_id)
+
+    def test_search_by_words(self):
+        expected_value = "some-values"
+        mocked_elastic_with_flexible_signature = mock.MagicMock()
+        # noinspection PyTypeChecker
+        driver_with_flexible_signature = ElasticSearchDriver(index, doc_type, mocked_elastic_with_flexible_signature)
+        mocked_elastic_with_flexible_signature.search.return_value = {"something": 123,
+                                                                      "hits": {
+                                                                          "something-more": 3245,
+                                                                          "hits": expected_value
+                                                                      }}
+
+        word1 = "word1"
+        value1 = "value1"
+        word2 = "word2"
+        value2 = 5656
+        size = 6556
+        result = driver_with_flexible_signature.search_by_words({word1: value1, word2: value2}, size)
+
+        assert result is expected_value
+        mocked_elastic_with_flexible_signature.search.assert_called_once_with(index=index,
+                                                                              doc_type=doc_type,
+                                                                              body={
+                                                                                  'query': {
+                                                                                      'bool': {'should':
+                                                                                          [{"term": {
+                                                                                              word1: value1}},
+                                                                                              {"term": {
+                                                                                                  word2: value2}}
+                                                                                          ]
+                                                                                      }
+                                                                                  },
+                                                                                  '_source': {
+                                                                                      'excludes': [word1, word2]}
+                                                                              },
+                                                                              size=size,
+                                                                              timeout=10)

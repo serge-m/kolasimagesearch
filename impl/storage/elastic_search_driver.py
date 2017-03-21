@@ -45,8 +45,8 @@ class ElasticSearchDriver:
             raise ElasticSearchDriverException() from e
 
     def search_by_words(self, words: Dict[str, object], size: int = 10):
-        # TODO: added unit tests and integration tests
-        should = [{'term': {word: value}} for word, value in words]
+        # TODO: add integration tests
+        should = [{'term': {word: value}} for word, value in words.items()]
 
         return self._es.search(index=self._index,
                                doc_type=self._type,
