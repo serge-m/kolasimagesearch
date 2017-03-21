@@ -41,11 +41,11 @@ class TestRegionRepository:
         mock_image_region_serializer.return_value.get_words.return_value = self.words
         mock_elastic_search_driver.return_value.search_by_words.return_value = self.expected_search_results
 
-        result = RegionRepository().find(self.image_region)
+        result = RegionRepository().find(self.descriptor1)
 
         assert result == self.expected_search_results
         mock_image_region_serializer.assert_called_once_with()
-        mock_image_region_serializer.return_value.get_words.assert_called_once_with(self.image_region)
+        mock_image_region_serializer.return_value.get_words.assert_called_once_with(self.descriptor1)
         mock_elastic_search_driver.assert_called_once_with(index=mock_config.ELASTIC_DESCRIPTOR_INDEX,
                                                            doc_type=mock_config.ELASTIC_DESCRIPTOR_TYPE)
         mock_elastic_search_driver.return_value.search_by_words.assert_called_once_with(self.words)

@@ -1,5 +1,6 @@
 from typing import Dict
 
+from impl.domain.descriptor import Descriptor
 from impl.domain.image_region import ImageRegion
 from impl.storage.search_words.search_terms_creator import SearchTermsCreator
 
@@ -20,5 +21,5 @@ class ImageRegionSerializer:
             "descriptor": list(image_region.descriptor.vector),
         }
 
-    def get_words(self, image_region: ImageRegion) -> Dict[str, object]:
-        return self._search_terms_creator.get_dictionary_of_words(image_region.descriptor)
+    def get_words(self, descriptor: Descriptor) -> Dict[str, object]:
+        return self._search_terms_creator.get_dictionary_of_words(descriptor)

@@ -1,4 +1,5 @@
 import config
+from impl.domain.descriptor import Descriptor
 from impl.domain.image_region import ImageRegion
 from impl.storage.elastic_search_driver import ElasticSearchDriver
 from impl.storage.image_region_serializer import ImageRegionSerializer
@@ -16,7 +17,7 @@ class RegionRepository:
         image_region_elastic_id = self._es.index(doc)
         return image_region_elastic_id
 
-    def find(self, image_region: ImageRegion):
-        words = self._serializer.get_words(image_region)
+    def find(self, descriptor: Descriptor):
+        words = self._serializer.get_words(descriptor)
         results = self._es.search_by_words(words)
         return results
