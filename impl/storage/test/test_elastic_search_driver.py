@@ -3,7 +3,7 @@ from unittest import mock
 import pytest
 from elasticsearch import Elasticsearch, ConnectionError
 
-from impl.storage.elastic_search_driver import ElasticSearchDriver, ElasticSearchDriverException
+from impl.storage.elastic_search_driver import ElasticSearchDriver, ElasticSearchDriverException, SearchResult
 
 index = "index"
 doc_type = "some_doc_type"
@@ -69,14 +69,14 @@ class TestElasticSearchDriver:
             driver.get_doc(mocked_id)
 
     def test_search_by_words(self):
-        expected_value = "some-values"
+        expected_values = ["some-values", 123123]
         mocked_elastic_with_flexible_signature = mock.MagicMock()
         # noinspection PyTypeChecker
         driver_with_flexible_signature = ElasticSearchDriver(index, doc_type, mocked_elastic_with_flexible_signature)
         mocked_elastic_with_flexible_signature.search.return_value = {"something": 123,
                                                                       "hits": {
                                                                           "something-more": 3245,
-                                                                          "hits": expected_value
+                                                                          "hits": expected_values
                                                                       }}
 
         word1 = "word1"
@@ -86,7 +86,7 @@ class TestElasticSearchDriver:
         size = 6556
         result = driver_with_flexible_signature.search_by_words({word1: value1, word2: value2}, size)
 
-        assert result is expected_value
+        assert result == [SearchResult(x) for x in expected_values]
         mocked_elastic_with_flexible_signature.search.assert_called_once_with(index=index,
                                                                               doc_type=doc_type,
                                                                               body={

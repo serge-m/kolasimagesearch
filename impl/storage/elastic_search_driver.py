@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Dict, List
 
 import config
 
@@ -7,6 +7,16 @@ from elasticsearch import Elasticsearch, ElasticsearchException
 
 class ElasticSearchDriverException(RuntimeError):
     pass
+
+
+class SearchResult:
+    def __init__(self, data):
+        self._data = data
+
+    def __eq__(self, other):
+        if isinstance(other, SearchResult):
+            return self._data == other._data
+        return NotImplementedError("Comparison not implemented for types other then SearchResult")
 
 
 class ElasticSearchDriver:
@@ -44,17 +54,15 @@ class ElasticSearchDriver:
         except KeyError as e:
             raise ElasticSearchDriverException() from e
 
-    def search_by_words(self, words: Dict[str, object], size: int = 10):
+    def search_by_words(self, words: Dict[str, object], size: int = 10) -> List[SearchResult]:
         # TODO: add integration tests
         should = [{'term': {word: value}} for word, value in words.items()]
 
-        return self._es.search(index=self._index,
-                               doc_type=self._type,
-                               body={
-                                   'query': {
-                                       'bool': {'should': should}
-                                   },
-                                   '_source': {'excludes': list(words.keys())}
-                               },
-                               size=size,
-                               timeout=self._timeout)['hits']['hits']
+        raw_results = self._es.search(index=self._index, doc_type=self._type,
+                                      body={'query': {'bool': {'should': should}},
+                                            '_source': {
+                                                'excludes': list(words.keys())
+                                            }},
+                                      size=size,
+                                      timeout=self._timeout)['hits']['hits']
+        return [SearchResult(raw) for raw in raw_results]

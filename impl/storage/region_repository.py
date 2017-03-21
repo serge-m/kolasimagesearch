@@ -17,7 +17,6 @@ class RegionRepository:
         return image_region_elastic_id
 
     def find(self, image_region: ImageRegion):
-        # TODO: add tests
         words = self._serializer.get_words(image_region)
         results = self._es.search_by_words(words)
         return results
