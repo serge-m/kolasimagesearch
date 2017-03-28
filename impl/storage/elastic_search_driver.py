@@ -2,7 +2,7 @@ from typing import Dict, List
 
 import config
 
-from elasticsearch import Elasticsearch, ElasticsearchException
+from elasticsearch import Elasticsearch, ElasticsearchException, NotFoundError
 
 
 class ElasticSearchDriverException(RuntimeError):
@@ -17,6 +17,9 @@ class SearchResult:
         if isinstance(other, SearchResult):
             return self._data == other._data
         return NotImplementedError("Comparison not implemented for types other then SearchResult")
+
+    def __str__(self):
+        return "SearchResult(data={})".format(self._data)
 
 
 class ElasticSearchDriver:
@@ -56,13 +59,15 @@ class ElasticSearchDriver:
 
     def search_by_words(self, words: Dict[str, object], size: int = 10) -> List[SearchResult]:
         # TODO: add integration tests
-        should = [{'term': {word: value}} for word, value in words.items()]
+        should = [{'term': {word: value}} for word, value in words.items() if value]
 
-        raw_results = self._es.search(index=self._index, doc_type=self._type,
-                                      body={'query': {'bool': {'should': should}},
-                                            '_source': {
-                                                'excludes': list(words.keys())
-                                            }},
-                                      size=size,
-                                      timeout=self._timeout)['hits']['hits']
-        return [SearchResult(raw) for raw in raw_results]
+        body = {'query': {'bool': {'should': should}}, '_source': {'excludes': list(words.keys())}}
+        try:
+            response = self._es.search(index=self._index, doc_type=self._type, body=body, size=size, timeout=self._get_timeout_string())
+        except NotFoundError as e:
+            raise ElasticSearchDriverException from e
+        raw_results = response['hits']['hits']
+        return [SearchResult(raw['_source']) for raw in raw_results]
+
+    def _get_timeout_string(self) -> str:
+        return "{:d}s".format(self._timeout)
