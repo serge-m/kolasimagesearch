@@ -12,7 +12,7 @@ class DescriptorSearch:
         self._repository = RegionRepository()
 
     def find_similar(self, descriptors: List[Descriptor]) -> List[SearchResult]:
-        # TODO: add tests, final metric ranking, deleting of duplicates
+        # TODO: final metric ranking, deleting of duplicates
         raw_results = itertools.chain.from_iterable(map(self._repository.find, descriptors))
         filtered = self._filter_results(descriptors, raw_results)
         ranked = self._rank_results(filtered)
