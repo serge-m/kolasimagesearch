@@ -48,4 +48,4 @@ class TestRegionRepository:
         mock_image_region_serializer.return_value.get_words.assert_called_once_with(self.descriptor1)
         mock_elastic_search_driver.assert_called_once_with(index=mock_config.ELASTIC_DESCRIPTOR_INDEX,
                                                            doc_type=mock_config.ELASTIC_DESCRIPTOR_TYPE)
-        mock_elastic_search_driver.return_value.search_by_words.assert_called_once_with(self.words, self.words.keys())
+        mock_elastic_search_driver.return_value.search_by_words.assert_called_once_with(self.words, list(self.words.keys()))
