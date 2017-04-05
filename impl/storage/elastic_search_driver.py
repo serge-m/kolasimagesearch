@@ -57,13 +57,16 @@ class ElasticSearchDriver:
         except KeyError as e:
             raise ElasticSearchDriverException() from e
 
-    def search_by_words(self, words: Dict[str, object], size: int = 10) -> List[SearchResult]:
+    def search_by_words(self, words: Dict[str, object], exclude_words=None, size: int = 10) -> List[SearchResult]:
         # TODO: add integration tests
-        should = [{'term': {word: value}} for word, value in words.items() if value]
+        should = [{'term': {word: value}} for word, value in words.items()]
 
-        body = {'query': {'bool': {'should': should}}, '_source': {'excludes': list(words.keys())}}
+        list_excluded_words = exclude_words if exclude_words else []
+        body = {'query': {'bool': {'should': should}},
+                '_source': {'excludes': list_excluded_words}}
         try:
-            response = self._es.search(index=self._index, doc_type=self._type, body=body, size=size, timeout=self._get_timeout_string())
+            response = self._es.search(index=self._index, doc_type=self._type, body=body, size=size,
+                                       timeout=self._get_timeout_string())
         except NotFoundError as e:
             raise ElasticSearchDriverException from e
         raw_results = response['hits']['hits']

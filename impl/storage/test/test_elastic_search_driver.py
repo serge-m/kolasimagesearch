@@ -87,9 +87,11 @@ class TestElasticSearchDriver:
         word1 = "word1"
         value1 = "value1"
         word2 = "word2"
+        exclude_words = ["exclude1", "exclude2"]
         value2 = 5656
         size = 6556
-        result = driver_with_flexible_signature.search_by_words({word1: value1, word2: value2}, size)
+        result = driver_with_flexible_signature.search_by_words({word1: value1, word2: value2},
+                                                                exclude_words, size)
 
         assert result == [SearchResult(x) for x in expected_values]
         mocked_elastic_with_flexible_signature.search.assert_called_once_with(index=index,
@@ -105,7 +107,7 @@ class TestElasticSearchDriver:
                                                                                       }
                                                                                   },
                                                                                   '_source': {
-                                                                                      'excludes': [word1, word2]}
+                                                                                      'excludes': exclude_words}
                                                                               },
                                                                               size=size,
                                                                               timeout='10s')

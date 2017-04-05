@@ -47,12 +47,12 @@ class TestIntegrationElasticSearchDriver:
         driver = ElasticSearchDriver(index_name, "some-doc-type")
 
         with pytest.raises(ElasticSearchDriverException):
-            driver.search_by_words({"word1": "value1", "word2": "value2"})
+            driver.search_by_words({"word1": "value1", "word2": "value2"}, ["word1", "word2", "word3"])
 
     def test_search_by_words_on_empty_index(self, unique_temp_index):
         driver = ElasticSearchDriver(unique_temp_index, "some-doc-type")
 
-        search_results = driver.search_by_words({"word1": "value1", "word2": "value2"})
+        search_results = driver.search_by_words({"word1": "value1", "word2": "value2"}, ["word1", "word2", "word3"])
 
         assert search_results == []
 
@@ -62,7 +62,7 @@ class TestIntegrationElasticSearchDriver:
         driver.index(self.doc1)
         driver.index(self.doc2)
         time.sleep(3)
-        search_results = driver.search_by_words({"word1": None, "word2": "value2shared", "word3": None})
+        search_results = driver.search_by_words({"word2": "value2shared"}, ["word1", "word2", "word3"])
 
         assert search_results == [SearchResult(self.payload1), SearchResult(self.payload2)]
 

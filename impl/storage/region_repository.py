@@ -21,5 +21,5 @@ class RegionRepository:
 
     def find(self, descriptor: Descriptor) -> List[SearchResult]:
         words = self._serializer.get_words(descriptor)
-        results = self._es.search_by_words(words)
+        results = self._es.search_by_words(words, words.keys())
         return results
