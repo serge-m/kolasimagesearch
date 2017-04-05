@@ -69,7 +69,6 @@ class TestElasticSearchDriver:
             driver.get_doc(mocked_id)
 
     def test_search_by_words(self):
-        #TODO: fix test
         value1 = "some-values"
         value2 = 123123
         expected_values = [value1, value2]
@@ -80,8 +79,8 @@ class TestElasticSearchDriver:
                                                                       "hits": {
                                                                           "something-more": 3245,
                                                                           "hits": [
-                                                                              {'_source': self.value1},
-                                                                              {'_source': self.value2}
+                                                                              {'_source': value1},
+                                                                              {'_source': value2}
                                                                           ]
                                                                       }}
 
@@ -109,4 +108,4 @@ class TestElasticSearchDriver:
                                                                                       'excludes': [word1, word2]}
                                                                               },
                                                                               size=size,
-                                                                              timeout=10)
+                                                                              timeout='10s')
