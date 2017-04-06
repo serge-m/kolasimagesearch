@@ -12,12 +12,12 @@ from impl.storage.source_image_storage import SourceImageStorage, LOCATION_FIELD
 INDEX_NAME = 'test_environment_{}'.format(hashlib.md5(os.urandom(128)).hexdigest()[:12])
 
 
-@pytest.fixture(scope='module', autouse=True)
+@pytest.fixture
 def index_name():
     return INDEX_NAME
 
 
-@pytest.fixture(scope='function', autouse=True)
+@pytest.fixture
 def setup_index(request, es, index_name):
     try:
         es.indices.create(index=index_name)

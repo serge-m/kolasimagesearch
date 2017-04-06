@@ -1,9 +1,14 @@
 from io import BytesIO
+from unittest import mock
 
 from image_processor import ImageProcessor
 import numpy as np
 from PIL import Image
 import matplotlib.pylab as plt
+
+# noinspection PyUnresolvedReferences
+from impl.storage.source_image_storage import SourceImageStorage
+from impl.test.elastic_fixtures import unique_temp_index, another_unique_temp_index, index_name
 
 from impl.domain.source_image_metadata import EMPTY_METADATA
 
@@ -53,14 +58,27 @@ image4 = numpy_to_binary(_combine(_generate_subimage(color1, color1), _generate_
 
 
 class TestIntegrationImageProcessor:
-    def test_integration_image_processor(self):
+
+    @mock.patch('impl.storage.source_image_storage.config')
+    @mock.patch('impl.storage.region_repository.config')
+    def test_integration_image_processor(self, c2, c, unique_temp_index, another_unique_temp_index):
 
         # plt.imshow(img1)
         # plt.show()
 
+        c.ELASTIC_SOURCE_IMAGES_INDEX = unique_temp_index
+        c.ELASTIC_SOURCE_IMAGES_TYPE = "images_" + unique_temp_index
+        c.FILE_SERVICE_URL = "http://localhost:9333/"
+        c2.ELASTIC_DESCRIPTOR_INDEX = another_unique_temp_index
+        c2.ELASTIC_DESCRIPTOR_TYPE = "descriptors_" + another_unique_temp_index
+
         processor = ImageProcessor()
         res1 = processor.process(image1, EMPTY_METADATA)
         res2 = processor.process(image2, EMPTY_METADATA)
-        # print(res1)
+
+        res3 = processor.process(image1, EMPTY_METADATA)
+        res4 = processor.process(image2, EMPTY_METADATA)
+
+        print(res1)
 
 

@@ -16,7 +16,17 @@ def index_name():
 
 # noinspection PyShadowingNames
 @pytest.fixture
-def unique_temp_index(request, index_name: str):
+def unique_temp_index(request):
+    return _create_index_with_finalizer(request)
+
+
+@pytest.fixture
+def another_unique_temp_index(request):
+    return _create_index_with_finalizer(request)
+
+
+def _create_index_with_finalizer(request):
+    index_name = generate_unique_index_name()
     es = Elasticsearch()
     es.indices.create(index=index_name)
 
