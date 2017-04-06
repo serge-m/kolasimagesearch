@@ -51,8 +51,8 @@ image2 = numpy_to_binary(_combine(_generate_subimage(color3, color4), _generate_
 image3 = numpy_to_binary(_combine(_generate_subimage(color1, color2), _generate_subimage(color3, color4)))
 image4 = numpy_to_binary(_combine(_generate_subimage(color1, color1), _generate_subimage(color2, color2)))
 
-class TestIntegrationImageProcessor:
 
+class TestIntegrationImageProcessor:
     def test_integration_image_processor(self):
 
         # plt.imshow(img1)

@@ -1,37 +1,9 @@
-import hashlib
-import os
 import time
 
 import pytest
-from elasticsearch import Elasticsearch
 
 from impl.storage.elastic_search_driver import ElasticSearchDriver, ElasticSearchDriverException, SearchResult
-
-
-def generate_unique_index_name():
-    return 'test_environment_{}'.format(hashlib.md5(os.urandom(128)).hexdigest()[:12])
-
-
-@pytest.fixture(scope='function', autouse=True)
-def index_name():
-    return generate_unique_index_name()
-
-
-@pytest.fixture
-def es():
-    return Elasticsearch()
-
-
-# noinspection PyShadowingNames
-@pytest.fixture(scope='function')
-def unique_temp_index(request, es: Elasticsearch, index_name: str):
-    es.indices.create(index=index_name)
-
-    def fin():
-        es.indices.delete(index_name)
-
-    request.addfinalizer(fin)
-    return index_name
+from impl.test.elastic_fixtures import unique_temp_index, index_name
 
 
 # noinspection PyShadowingNames
@@ -61,7 +33,7 @@ class TestIntegrationElasticSearchDriver:
 
         driver.index(self.doc1)
         driver.index(self.doc2)
-        time.sleep(3)
+        time.sleep(4)
         search_results = driver.search_by_words({"word2": "value2shared"}, ["word1", "word2", "word3"])
 
         assert search_results == [SearchResult(self.payload1), SearchResult(self.payload2)]
