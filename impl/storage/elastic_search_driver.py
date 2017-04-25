@@ -1,8 +1,12 @@
 from typing import Dict, List
 
+import numpy as np
+
 import config
 
 from elasticsearch import Elasticsearch, ElasticsearchException, NotFoundError
+
+from impl.domain.descriptor import Descriptor
 
 
 class ElasticSearchDriverException(RuntimeError):
@@ -12,6 +16,16 @@ class ElasticSearchDriverException(RuntimeError):
 class SearchResult:
     def __init__(self, data):
         self._data = data
+        self._descriptor = Descriptor(self._data['descriptor'])
+        self._source_id = str(self._data['source_id'])
+
+    @property
+    def descriptor(self) -> Descriptor:
+        return self._descriptor
+
+    @property
+    def source_id(self) -> str:
+        return self._source_id
 
     def __eq__(self, other):
         if isinstance(other, SearchResult):
@@ -26,7 +40,8 @@ class ElasticSearchDriver:
     FILED_ID = "_id"
     FILED_SOURCE = "_source"
 
-    def __init__(self, index: str, doc_type: str, elastic_search: Elasticsearch = None):
+    def __init__(self, index: str, doc_type: str, elastic_search: Elasticsearch = None, flush_data=False):
+        self._flush_data = flush_data
         self._type = doc_type
         self._index = index
         if elastic_search:
@@ -37,7 +52,8 @@ class ElasticSearchDriver:
 
     def index(self, doc: dict) -> str:
         try:
-            response = self._es.index(index=self._index, doc_type=self._type, body=doc)
+            response = self._es.index(index=self._index, doc_type=self._type, body=doc,
+                                      refresh='wait_for' if self._flush_data else False)
         except ElasticsearchException as e:
             raise ElasticSearchDriverException() from e
 

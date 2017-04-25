@@ -1,6 +1,8 @@
 from io import BytesIO
+from typing import List, Tuple
 from unittest import mock
 
+from image_encoder import ImageEncoder
 from image_processor import ImageProcessor
 import numpy as np
 from PIL import Image
@@ -12,11 +14,20 @@ from impl.test.elastic_fixtures import unique_temp_index, another_unique_temp_in
 
 from impl.domain.source_image_metadata import EMPTY_METADATA
 
+
 def _combine(image1, image2):
     return np.hstack([image1, image2])
 
 
 _format = "jpeg"
+
+block_size = 16
+
+pos1 = [0, 0]
+pos2 = [block_size, 0]
+pos3 = [block_size, block_size]
+
+positions = [pos1, pos2, pos3]
 
 
 def numpy_to_binary(image: np.ndarray) -> bytes:
@@ -26,59 +37,100 @@ def numpy_to_binary(image: np.ndarray) -> bytes:
     return file_like.getvalue()
 
 
-def _generate_subimage(color1, color2):
+def _put_color_square(color, img, pos):
+    y, x = pos
+    img[y:y + block_size, x:x + block_size] = color
+
+
+# def _generate_subimage(color1, color2):
+#     img = np.zeros([h, w, num_channels], dtype='uint8')
+#
+#     _put_color_square(color1, img, pos1)
+#     _put_color_square(color1, img, pos2)
+#     _put_color_square(color2, img, pos3)
+#
+#     return img
+
+
+def _generate_subimage(list_positions: List, list_colors: List):
     img = np.zeros([h, w, num_channels], dtype='uint8')
 
-    _put_color(color1, img, w * h // 3)
-    _put_color(color2, img, w * h // 3)
+    for color, position in zip(list_colors, list_positions):
+        _put_color_square(color, img, position)
+
     return img
 
 
-def _put_color(color, img, num_samples):
-    y = rs.random_integers(0, h - 1, [num_samples])
-    x = rs.random_integers(0, w - 1, [num_samples])
-    img[y, x, :] = color
+# def _put_color(color, img, num_samples):
+#     square_size = 16
+#     array_y = rs.random_integers(0, h // square_size - 1, [num_samples])
+#     array_x = rs.random_integers(0, w // square_size - 1, [num_samples])
+#
+#     for i in range(num_samples):
+#         img[y:y+square_size, x:x+square_size, :] = color
 
 
-h = 40
-w = 50
+h = 32
+w = 64
 num_channels = 3
 
 rs = np.random.RandomState(0)
 
+color1 = [255, 255, 255]
+color2 = [128, 128, 128]
+color3 = [64, 64, 64]
+color4 = [32, 32, 32]
+raw1 = _combine(_generate_subimage(list_positions=positions, list_colors=[color1, color2, color3]),
+                _generate_subimage(list_positions=positions, list_colors=[color2, color1, color3]))
 
-color1 = [128, 0, 255]
-color2 = [128, 255, 255]
-color3 = [128, 0, 0]
-color4 = [0, 120, 0]
-image1 = numpy_to_binary(_combine(_generate_subimage(color1, color2), _generate_subimage(color1, color2)))
-image2 = numpy_to_binary(_combine(_generate_subimage(color3, color4), _generate_subimage(color3, color4)))
-image3 = numpy_to_binary(_combine(_generate_subimage(color1, color2), _generate_subimage(color3, color4)))
-image4 = numpy_to_binary(_combine(_generate_subimage(color1, color1), _generate_subimage(color2, color2)))
+raw2 = _combine(_generate_subimage(list_positions=positions, list_colors=[color3, color2, color1]),
+                _generate_subimage(list_positions=positions, list_colors=[color3, color3, color4]))
+
+raw3 = _combine(_generate_subimage(list_positions=positions, list_colors=[color4, color3, color3]),
+                _generate_subimage(list_positions=positions, list_colors=[color3, color3, color4]))
+
+raw4 = _combine(_generate_subimage(list_positions=positions, list_colors=[color2, color2, color3]),
+                _generate_subimage(list_positions=positions, list_colors=[color3, color4, color4]))
+
+# raw1 = _combine(_generate_subimage(color1, color2), _generate_subimage(color1, color2))
+# raw3 = _combine(_generate_subimage(color1, color2), _generate_subimage(color3, color4))
+# raw4 = _combine(_generate_subimage(color1, color1), _generate_subimage(color2, color2))
+# raw2 = _combine(_generate_subimage(color3, color4), _generate_subimage(color3, color4))
+raw_images = [raw1, raw2, raw3, raw4]
+images = [numpy_to_binary(raw) for raw in raw_images]
 
 
 class TestIntegrationImageProcessor:
+    def test_codec_preserves_images_to_make_results_reproducible(self):
+        encoder = ImageEncoder(image_format="jpeg")
+        for raw, image in zip(raw_images, images):
+            decoded = encoder.binary_to_array(image)
+            assert np.array_equal(raw, decoded)
 
     @mock.patch('impl.storage.source_image_storage.config')
     @mock.patch('impl.storage.region_repository.config')
     def test_integration_image_processor(self, c2, c, unique_temp_index, another_unique_temp_index):
-
-        # plt.imshow(img1)
-        # plt.show()
-
         c.ELASTIC_SOURCE_IMAGES_INDEX = unique_temp_index
         c.ELASTIC_SOURCE_IMAGES_TYPE = "images_" + unique_temp_index
         c.FILE_SERVICE_URL = "http://localhost:9333/"
         c2.ELASTIC_DESCRIPTOR_INDEX = another_unique_temp_index
         c2.ELASTIC_DESCRIPTOR_TYPE = "descriptors_" + another_unique_temp_index
 
-        processor = ImageProcessor()
-        res1 = processor.process(image1, EMPTY_METADATA)
-        res2 = processor.process(image2, EMPTY_METADATA)
+        # encoder = ImageEncoder(image_format="jpeg")
+        # dec1 = encoder.binary_to_array(images[0])
+        # plt.figure()
+        # plt.imshow(raw1)
+        # plt.show()
+        #
+        # plt.figure()
+        # plt.imshow(dec1)
+        # plt.show()
 
-        res3 = processor.process(image1, EMPTY_METADATA)
-        res4 = processor.process(image2, EMPTY_METADATA)
+        processor = ImageProcessor(flush_data=True)
+        res1 = processor.process(images[0], EMPTY_METADATA)
+        res2 = processor.process(images[1], EMPTY_METADATA)
+
+        res3 = processor.process(images[0], EMPTY_METADATA)
+        res4 = processor.process(images[2], EMPTY_METADATA)
 
         print(res1)
-
-

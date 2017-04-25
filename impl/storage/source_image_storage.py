@@ -14,9 +14,10 @@ def create_doc(metadata: SourceImageMetadata, path_image: str) -> dict:
 
 
 class SourceImageStorage:
-    def __init__(self):
+    def __init__(self, flush_data=False):
         self._storage_service = ImageService(url=config.FILE_SERVICE_URL)
-        self._es = ElasticSearchDriver(index=config.ELASTIC_SOURCE_IMAGES_INDEX, doc_type=config.ELASTIC_SOURCE_IMAGES_TYPE)
+        self._es = ElasticSearchDriver(index=config.ELASTIC_SOURCE_IMAGES_INDEX, doc_type=config.ELASTIC_SOURCE_IMAGES_TYPE,
+                                       flush_data=flush_data)
 
     def save_source_image(self, image: bytes, metadata: SourceImageMetadata) -> str:
         if metadata is not EMPTY_METADATA:

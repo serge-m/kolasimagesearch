@@ -8,9 +8,10 @@ from impl.storage.image_region_serializer import ImageRegionSerializer
 
 
 class RegionRepository:
-    def __init__(self):
+    def __init__(self, flush_data=False):
         self._es = ElasticSearchDriver(index=config.ELASTIC_DESCRIPTOR_INDEX,
-                                       doc_type=config.ELASTIC_DESCRIPTOR_TYPE)
+                                       doc_type=config.ELASTIC_DESCRIPTOR_TYPE,
+                                       flush_data=flush_data)
 
         self._serializer = ImageRegionSerializer()
 

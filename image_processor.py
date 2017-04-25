@@ -11,14 +11,14 @@ def normalize(image: bytes) -> bytes:
 
 
 class ImageProcessor:
-    def __init__(self):
-        self._source_image_storage = SourceImageStorage()
+    def __init__(self, flush_data=False):
+        self._source_image_storage = SourceImageStorage(flush_data=flush_data)
         self._feature_engine = SubimageFeatureEngine(HistogramFeatureExtractor(), VerticalSplit())
-        self._feature_search = DescriptorSearch()
+        self._search_service = DescriptorSearch(save_data=True, flush_data=flush_data)
 
     def process(self, image: bytes, metadata: SourceImageMetadata):
         normalized = normalize(image)
         ref_source = self._source_image_storage.save_source_image(normalized, metadata)
-        descriptors = self._feature_engine.extract_features(normalized, ref_source)
-        return self._feature_search.find_similar(descriptors)
+        image_regions = self._feature_engine.extract_features(normalized, ref_source)
+        return self._search_service.find_similar(image_regions)
 
