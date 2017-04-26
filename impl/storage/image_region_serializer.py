@@ -2,6 +2,7 @@ from typing import Dict
 
 from impl.domain.descriptor import Descriptor
 from impl.domain.image_region import ImageRegion
+from impl.storage.elastic_search_driver import SearchResult
 from impl.storage.search_words.search_terms_creator import SearchTermsCreator
 
 
@@ -17,8 +18,8 @@ class ImageRegionSerializer:
     @staticmethod
     def _create_base(image_region) -> Dict[str, object]:
         return {
-            "source_id": image_region.source_image_reference,
-            "descriptor": list(image_region.descriptor.vector),
+            SearchResult.FIELD_SOURCE_ID: image_region.source_image_reference,
+            SearchResult.FIELD_DESCRIPTOR: list(image_region.descriptor.vector),
         }
 
     def get_words(self, descriptor: Descriptor) -> Dict[str, object]:

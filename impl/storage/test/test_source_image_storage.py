@@ -29,7 +29,7 @@ class TestSourceImageStorage:
 
         mocked_image_service.assert_called_once_with(url=file_service_url)
         mocked_image_service.return_value.put_encoded.assert_called_once_with(self.image)
-        mocked_elastic_driver.assert_called_once_with(index=index_name, doc_type=doc_type)
+        mocked_elastic_driver.assert_called_once_with(index=index_name, doc_type=doc_type, flush_data=False)
         mocked_elastic_driver.return_value.index.assert_called_once_with({
             "location": self.image_location
         })

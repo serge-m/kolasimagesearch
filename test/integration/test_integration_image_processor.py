@@ -2,8 +2,9 @@ from io import BytesIO
 from typing import List, Tuple
 from unittest import mock
 
-from image_encoder import ImageEncoder
 from image_processor import ImageProcessor
+from kolasimagestorage.image_encoder import ImageEncoder
+
 import numpy as np
 from PIL import Image
 import matplotlib.pylab as plt

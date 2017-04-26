@@ -1,4 +1,5 @@
 from unittest import mock
+from unittest.mock import call
 
 import pytest
 from elasticsearch import Elasticsearch, ConnectionError
@@ -16,11 +17,12 @@ mocked_get_response = {'_source': doc}
 wrong_index_response = {'no_id_field_id': mocked_id}
 wrong_get_response = {'no_source_field': mocked_id}
 
-mocked_elastic = mock.create_autospec(Elasticsearch)
-driver = ElasticSearchDriver(index, doc_type, mocked_elastic)
-
 
 class TestElasticSearchDriver:
+    mocked_elastic = mock.MagicMock(Elasticsearch)
+    # noinspection PyTypeChecker
+    driver = ElasticSearchDriver(index, doc_type, mocked_elastic)
+
     @mock.patch('impl.storage.elastic_search_driver.Elasticsearch', spec=True)
     def test_default_driver(self, mocked_elastic):
         mocked_elastic.return_value = mock.create_autospec(Elasticsearch)
@@ -30,57 +32,66 @@ class TestElasticSearchDriver:
         assert driver._es is mocked_elastic.return_value
 
     def test_non_default_driver(self):
-        assert driver._es is mocked_elastic
+        assert self.driver._es is self.mocked_elastic
 
     def test_index_working(self):
-        mocked_elastic.index.return_value = mocked_index_response
+        self.mocked_elastic.index.return_value = mocked_index_response
 
-        result = driver.index(doc)
+        result = self.driver.index(doc)
 
         assert result is mocked_id
-        mocked_elastic.index.assert_called_once_with(index=index, doc_type=doc_type, body=doc)
+        self.mocked_elastic.index.assert_called_once_with(index=index, doc_type=doc_type, body=doc, refresh=False)
+
+    def test_index_with_flush_works(self):
+        # noinspection PyTypeChecker
+        driver_with_flush = ElasticSearchDriver(index, doc_type, self.mocked_elastic, True)
+        self.mocked_elastic.index.return_value = mocked_index_response
+
+        result = driver_with_flush.index(doc)
+
+        assert result is mocked_id
+        self.mocked_elastic.index.assert_has_calls([call(index=index, doc_type=doc_type, body=doc, refresh='wait_for')])
 
     def test_index_with_exception(self):
-        mocked_elastic.index.side_effect = ConnectionError
+        self.mocked_elastic.index.side_effect = ConnectionError
         with pytest.raises(ElasticSearchDriverException):
-            driver.index(doc)
+            self.driver.index(doc)
 
     def test_index_with_wrong_response(self):
-        mocked_elastic.index.return_value = wrong_index_response
+        self.mocked_elastic.index.return_value = wrong_index_response
         with pytest.raises(ElasticSearchDriverException):
-            driver.index(doc)
+            self.driver.index(doc)
 
     def test_get_doc_working(self):
-        mocked_elastic.get.return_value = mocked_get_response
+        self.mocked_elastic.get.return_value = mocked_get_response
 
-        result = driver.get_doc(mocked_id)
+        result = self.driver.get_doc(mocked_id)
 
         assert result == doc
-        mocked_elastic.get.assert_called_once_with(index=index, doc_type=doc_type, id=mocked_id)
+        self.mocked_elastic.get.assert_called_once_with(index=index, doc_type=doc_type, id=mocked_id)
 
     def test_get_doc_with_exception(self):
-        mocked_elastic.get.side_effect = ConnectionError
+        self.mocked_elastic.get.side_effect = ConnectionError
         with pytest.raises(ElasticSearchDriverException):
-            driver.get_doc(mocked_id)
+            self.driver.get_doc(mocked_id)
 
     def test_get_doc_with_wrong_response(self):
-        mocked_elastic.get.return_value = wrong_get_response
+        self.mocked_elastic.get.return_value = wrong_get_response
         with pytest.raises(ElasticSearchDriverException):
-            driver.get_doc(mocked_id)
+            self.driver.get_doc(mocked_id)
 
     def test_search_by_words(self):
-        value1 = "some-values"
-        value2 = 123123
-        expected_values = [value1, value2]
         mocked_elastic_with_flexible_signature = mock.MagicMock()
         # noinspection PyTypeChecker
         driver_with_flexible_signature = ElasticSearchDriver(index, doc_type, mocked_elastic_with_flexible_signature)
+        expected_result1 = {SearchResult.FIELD_DESCRIPTOR: [1], SearchResult.FIELD_SOURCE_ID: "some_id1"}
+        expected_result2 = {SearchResult.FIELD_DESCRIPTOR: [2], SearchResult.FIELD_SOURCE_ID: "some_id2"}
         mocked_elastic_with_flexible_signature.search.return_value = {"something": 123,
                                                                       "hits": {
                                                                           "something-more": 3245,
                                                                           "hits": [
-                                                                              {'_source': value1},
-                                                                              {'_source': value2}
+                                                                              {'_source': expected_result1},
+                                                                              {'_source': expected_result2},
                                                                           ]
                                                                       }}
 
@@ -93,16 +104,15 @@ class TestElasticSearchDriver:
         result = driver_with_flexible_signature.search_by_words({word1: value1, word2: value2},
                                                                 exclude_words, size)
 
-        assert result == [SearchResult(x) for x in expected_values]
+        assert result == [SearchResult(x) for x in [expected_result1, expected_result2]]
         mocked_elastic_with_flexible_signature.search.assert_called_once_with(index=index,
                                                                               doc_type=doc_type,
                                                                               body={
                                                                                   'query': {
-                                                                                      'bool': {'should':
-                                                                                          [{"term": {
-                                                                                              word1: value1}},
-                                                                                              {"term": {
-                                                                                                  word2: value2}}
+                                                                                      'bool': {
+                                                                                          'should': [
+                                                                                              {"term": {word1: value1}},
+                                                                                              {"term": {word2: value2}}
                                                                                           ]
                                                                                       }
                                                                                   },

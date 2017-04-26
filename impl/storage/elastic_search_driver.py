@@ -14,10 +14,13 @@ class ElasticSearchDriverException(RuntimeError):
 
 
 class SearchResult:
+    FIELD_DESCRIPTOR = 'descriptor'
+    FIELD_SOURCE_ID = 'source_id'
+
     def __init__(self, data):
         self._data = data
-        self._descriptor = Descriptor(self._data['descriptor'])
-        self._source_id = str(self._data['source_id'])
+        self._descriptor = Descriptor(self._data[self.FIELD_DESCRIPTOR])
+        self._source_id = str(self._data[self.FIELD_SOURCE_ID])
 
     @property
     def descriptor(self) -> Descriptor:

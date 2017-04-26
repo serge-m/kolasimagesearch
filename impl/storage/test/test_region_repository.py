@@ -12,7 +12,7 @@ class TestRegionRepository:
     expected_image_region_elastic_id = "some_image_region_elastic_id"
     serialized_dict = {"key", "value"}
     words = {"word1": "value1", "word2": "value2"}
-    expected_search_results = [SearchResult(123), SearchResult(345)]
+    expected_search_results = [mock.MagicMock(SearchResult), mock.MagicMock(SearchResult)]
 
     @mock.patch('impl.storage.region_repository.config')
     @mock.patch('impl.storage.region_repository.ElasticSearchDriver', autospec=True)
@@ -29,7 +29,8 @@ class TestRegionRepository:
         mock_image_region_serializer.assert_called_once_with()
         mock_image_region_serializer.return_value.create_doc.assert_called_once_with(self.image_region)
         mock_elastic_search_driver.assert_called_once_with(index=mock_config.ELASTIC_DESCRIPTOR_INDEX,
-                                                           doc_type=mock_config.ELASTIC_DESCRIPTOR_TYPE)
+                                                           doc_type=mock_config.ELASTIC_DESCRIPTOR_TYPE,
+                                                           flush_data=False)
         mock_elastic_search_driver.return_value.index.assert_called_once_with(self.serialized_dict)
 
     @mock.patch('impl.storage.region_repository.config')
@@ -47,5 +48,15 @@ class TestRegionRepository:
         mock_image_region_serializer.assert_called_once_with()
         mock_image_region_serializer.return_value.get_words.assert_called_once_with(self.descriptor1)
         mock_elastic_search_driver.assert_called_once_with(index=mock_config.ELASTIC_DESCRIPTOR_INDEX,
-                                                           doc_type=mock_config.ELASTIC_DESCRIPTOR_TYPE)
+                                                           doc_type=mock_config.ELASTIC_DESCRIPTOR_TYPE,
+                                                           flush_data=False)
         mock_elastic_search_driver.return_value.search_by_words.assert_called_once_with(self.words, list(self.words.keys()))
+
+    @mock.patch('impl.storage.region_repository.config')
+    @mock.patch('impl.storage.region_repository.ElasticSearchDriver', autospec=True)
+    def test_with_flush_data(self, mock_elastic_search_driver, mock_config):
+        RegionRepository(True)
+
+        mock_elastic_search_driver.assert_called_once_with(index=mock_config.ELASTIC_DESCRIPTOR_INDEX,
+                                                           doc_type=mock_config.ELASTIC_DESCRIPTOR_TYPE,
+                                                           flush_data=True)

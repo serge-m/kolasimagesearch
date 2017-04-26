@@ -2,7 +2,7 @@ from impl.domain.source_image_metadata import SourceImageMetadata
 from impl.feature_engine.feature_extractor import HistogramFeatureExtractor
 from impl.feature_engine.subimage_extractor import VerticalSplit
 from impl.feature_engine.subimage_feature_engine import SubimageFeatureEngine
-from impl.descriptor_search import DescriptorSearch
+from impl.search.descriptor_search import DescriptorSearch
 from impl.storage.source_image_storage import SourceImageStorage
 
 
