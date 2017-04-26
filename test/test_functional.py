@@ -13,6 +13,7 @@ from test.test_image_processor import expected_search_result
 
 current_dir_path = os.path.dirname(os.path.realpath(__file__))
 
+
 @pytest.fixture
 def client(request):
     test_client = app.test_client()
@@ -69,11 +70,12 @@ class TestApp:
 
     @mock.patch('app.ImageProcessor', spec=True)
     def test_post_search_mocked(self, mocked_image_processor, client):
-        mocked_image_processor.return_value.extract_features_and_create_regions.return_value = expected_search_result
+        mocked_image_processor.return_value.process.return_value = expected_search_result
 
         response = post_files(client, '/api/search', {'file': BytesIO(self.image_data)})
 
         mocked_image_processor.assert_called_once_with()
-        mocked_image_processor.return_value.extract_features_and_create_regions.assert_called_once_with(self.image_data, EMPTY_METADATA)
+        mocked_image_processor.return_value.process.assert_called_once_with(self.image_data,
+                                                                                                        EMPTY_METADATA)
         assert response.status_code == 200
         assert json_of_response(response) == expected_search_result

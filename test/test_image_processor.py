@@ -26,10 +26,23 @@ class TestImageProcessor:
 
         result = ImageProcessor().process(self.image, self.metadata)
 
-        descriptor_search.assert_called_once_with()
+        descriptor_search.assert_called_once_with(save_data=True, flush_data=False)
         descriptor_search.return_value.find_similar.assert_called_once_with(self.list_descriptors)
         feature_engine.assert_called_once_with(HistogramFeatureExtractor(), VerticalSplit())
         feature_engine.return_value.extract_features.assert_called_once_with(self.expected_normalized, self.ref_source)
-        source_image_storage.assert_called_once_with()
+        source_image_storage.assert_called_once_with(flush_data=False)
         source_image_storage.return_value.save_source_image.assert_called_once_with(self.expected_normalized, self.metadata)
         assert result == expected_search_result
+
+    @mock.patch('image_processor.SubimageFeatureEngine', spec=True)
+    @mock.patch('image_processor.DescriptorSearch', spec=True)
+    @mock.patch('image_processor.SourceImageStorage', spec=True)
+    def test_with_flushing_data_for_tests(self, source_image_storage, descriptor_search, feature_engine):
+        source_image_storage.return_value.save_source_image.return_value = self.ref_source
+        feature_engine.return_value.extract_features.return_value = self.list_descriptors
+        descriptor_search.return_value.find_similar.return_value = expected_search_result
+
+        result = ImageProcessor(True)
+
+        descriptor_search.assert_called_once_with(save_data=True, flush_data=True)
+        source_image_storage.assert_called_once_with(flush_data=True)

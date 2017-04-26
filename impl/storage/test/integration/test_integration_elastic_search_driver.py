@@ -8,10 +8,12 @@ from impl.test.elastic_fixtures import unique_temp_index, index_name
 
 # noinspection PyShadowingNames
 class TestIntegrationElasticSearchDriver:
-    payload1 = {"payload": "data1"}
-    payload2 = {"payload": "data2"}
+    payload1 = {SearchResult.FIELD_DESCRIPTOR: [1], SearchResult.FIELD_SOURCE_ID: "some_id1"}
+    payload2 = {SearchResult.FIELD_DESCRIPTOR: [2], SearchResult.FIELD_SOURCE_ID: "some_id2"}
+
     words1 = {"word1": "value1", "word2": "value2shared", "word3": "value3"}
     words2 = {"word1": "value14", "word2": "value2shared", "word3": "value23"}
+
     doc1 = dict(**words1, **payload1)
     doc2 = dict(**words2, **payload2)
 
