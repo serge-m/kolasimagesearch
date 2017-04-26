@@ -1,4 +1,3 @@
-
 ## Kolasimagesearch
 Image Search by descriptors. 
 
@@ -10,11 +9,12 @@ Based on elasticsearch and kolasimagestorage.
 
 ## Testing
 * Install requirements from requirements.txt
-* Run elastic search and image storage using 
+* Install [kolasimagestorage](https://github.com/serge-m/kolasimagestorage)
+* Run elastic search and image storage (required for integration tests)
  ```
  ./run_dependencies_for_tests.sh
  ```
- (required for integraion tests)
+ 
 * Run tests
  ```
  ./run_tests.sh
