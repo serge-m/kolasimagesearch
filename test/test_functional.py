@@ -76,6 +76,6 @@ class TestApp:
 
         mocked_image_processor.assert_called_once_with()
         mocked_image_processor.return_value.process.assert_called_once_with(self.image_data,
-                                                                                                        EMPTY_METADATA)
+                                                                            EMPTY_METADATA)
         assert response.status_code == 200
         assert json_of_response(response) == expected_search_result

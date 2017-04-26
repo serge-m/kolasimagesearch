@@ -3,6 +3,8 @@ import time
 import pytest
 
 from impl.storage.elastic_search_driver import ElasticSearchDriver, ElasticSearchDriverException, SearchResult
+
+# noinspection PyUnresolvedReferences
 from impl.test.elastic_fixtures import unique_temp_index, index_name
 
 

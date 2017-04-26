@@ -1,19 +1,17 @@
 from io import BytesIO
-from typing import List, Tuple
+from typing import List
 from unittest import mock
-
-from image_processor import ImageProcessor
-from kolasimagestorage.image_encoder import ImageEncoder
 
 import numpy as np
 from PIL import Image
-import matplotlib.pylab as plt
+
+from image_processor import ImageProcessor
+from impl.domain.source_image_metadata import EMPTY_METADATA
 
 # noinspection PyUnresolvedReferences
-from impl.storage.source_image_storage import SourceImageStorage
 from impl.test.elastic_fixtures import unique_temp_index, another_unique_temp_index, index_name
 
-from impl.domain.source_image_metadata import EMPTY_METADATA
+from kolasimagestorage.image_encoder import ImageEncoder
 
 
 def _combine(image1, image2):
@@ -43,16 +41,6 @@ def _put_color_square(color, img, pos):
     img[y:y + block_size, x:x + block_size] = color
 
 
-# def _generate_subimage(color1, color2):
-#     img = np.zeros([h, w, num_channels], dtype='uint8')
-#
-#     _put_color_square(color1, img, pos1)
-#     _put_color_square(color1, img, pos2)
-#     _put_color_square(color2, img, pos3)
-#
-#     return img
-
-
 def _generate_subimage(list_positions: List, list_colors: List):
     img = np.zeros([h, w, num_channels], dtype='uint8')
 
@@ -60,15 +48,6 @@ def _generate_subimage(list_positions: List, list_colors: List):
         _put_color_square(color, img, position)
 
     return img
-
-
-# def _put_color(color, img, num_samples):
-#     square_size = 16
-#     array_y = rs.random_integers(0, h // square_size - 1, [num_samples])
-#     array_x = rs.random_integers(0, w // square_size - 1, [num_samples])
-#
-#     for i in range(num_samples):
-#         img[y:y+square_size, x:x+square_size, :] = color
 
 
 h = 32
@@ -93,10 +72,6 @@ raw3 = _combine(_generate_subimage(list_positions=positions, list_colors=[color4
 raw4 = _combine(_generate_subimage(list_positions=positions, list_colors=[color2, color2, color3]),
                 _generate_subimage(list_positions=positions, list_colors=[color3, color4, color4]))
 
-# raw1 = _combine(_generate_subimage(color1, color2), _generate_subimage(color1, color2))
-# raw3 = _combine(_generate_subimage(color1, color2), _generate_subimage(color3, color4))
-# raw4 = _combine(_generate_subimage(color1, color1), _generate_subimage(color2, color2))
-# raw2 = _combine(_generate_subimage(color3, color4), _generate_subimage(color3, color4))
 raw_images = [raw1, raw2, raw3, raw4]
 images = [numpy_to_binary(raw) for raw in raw_images]
 
