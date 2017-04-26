@@ -3,6 +3,13 @@ Image Search by descriptors.
 
 Based on elasticsearch and kolasimagestorage.
 
+Very basic region extraction and descriptors are implemented. 
+Images is split into left and right halves. 
+Those are our ROIs. 
+Color histograms are calculated for each ROI. 
+Those are our descriptors.
+L2 norm is used for similarity.
+
 ## References 
 * [The complete guide to building an image search engine with Python and OpenCV](http://www.pyimagesearch.com/2014/12/01/complete-guide-building-image-search-engine-python-opencv/)
 * [image-match](https://github.com/ascribe/image-match)
@@ -19,5 +26,7 @@ Based on elasticsearch and kolasimagestorage.
  ```
  ./run_tests.sh
  ```
-## TODO
-* cleanup dependency on elastic in tests
+
+## Other
+
+TODOs and Issues [here](https://github.com/serge-m/kolasimagesearch/issues)
