@@ -92,21 +92,22 @@ class TestIntegrationImageProcessor:
         c2.ELASTIC_DESCRIPTOR_INDEX = another_unique_temp_index
         c2.ELASTIC_DESCRIPTOR_TYPE = "descriptors_" + another_unique_temp_index
 
-        # encoder = ImageEncoder(image_format="jpeg")
-        # dec1 = encoder.binary_to_array(images[0])
-        # plt.figure()
-        # plt.imshow(raw1)
-        # plt.show()
-        #
-        # plt.figure()
-        # plt.imshow(dec1)
-        # plt.show()
-
         processor = ImageProcessor(flush_data=True)
         res1 = processor.process(images[0], EMPTY_METADATA)
+        assert len(res1[0].get_similar()) == 0  # not found
+        similar1_1 = res1[1].get_similar()
+        assert len(similar1_1) == 1  # region from first half of the image is found
+        assert similar1_1[0].distance == 0
+
         res2 = processor.process(images[1], EMPTY_METADATA)
+        similar2_0 = res2[0].get_similar()
+        similar2_1 = res2[1].get_similar()
+        assert len(similar2_0) == 1  # one is found
+        assert similar2_0[0].distance == 0  # descriptors are equivalent
+        assert len(similar2_1) == 1
+        assert similar2_1[0].distance == 3.0  # descriptors are different equivalent
 
         res3 = processor.process(images[0], EMPTY_METADATA)
         res4 = processor.process(images[2], EMPTY_METADATA)
 
-        print(res1)
+
