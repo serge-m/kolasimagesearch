@@ -26,15 +26,19 @@ binary_image = b"some encoded image"
 
 class TestVerticalSplit:
     def test_extract_subimages(self):
-        subimages = VerticalSplit().extract(whole_image)
+        list_subimages = VerticalSplit().extract(whole_image)
 
-        assert np.array_equal(np.hstack(subimages), whole_image)
+        assert np.array_equal(self._stack_subimages(list_subimages), whole_image)
 
     def test_supports_only_1_channel_images(self):
-        subimages = VerticalSplit().extract(whole_image_1c)
+        list_subimages = VerticalSplit().extract(whole_image_1c)
 
-        assert np.array_equal(np.hstack(subimages), whole_image_1c)
+        assert np.array_equal(self._stack_subimages(list_subimages), whole_image_1c)
 
     def test_supports_only_3dim_arrays(self):
         with pytest.raises(SubimageExtractorException):
             VerticalSplit().extract(array_1d)
+
+    @staticmethod
+    def _stack_subimages(list_subimages):
+        return np.hstack([subimage.get_image() for subimage in list_subimages])
