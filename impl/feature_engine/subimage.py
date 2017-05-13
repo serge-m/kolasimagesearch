@@ -7,3 +7,10 @@ class SubImage:
 
     def get_image(self) -> np.ndarray:
         return self._image
+
+    def __eq__(self, other):
+        if isinstance(other, SubImage):
+            return self._image == other._image
+        return NotImplementedError("Comparison not implemented for types other then SubImage")
+
+
