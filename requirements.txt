@@ -1,2 +1,3 @@
 py==1.4.33
 pytest==3.0.7
+kolasimagestorage>=0.0.1
