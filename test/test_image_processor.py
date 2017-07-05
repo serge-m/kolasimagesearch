@@ -1,7 +1,7 @@
 from unittest import mock
 
 from image_processor import ImageProcessor
-from impl.domain.descriptor import Descriptor
+from kolasimagecommon import Descriptor
 from impl.domain.source_image_metadata import SourceImageMetadata
 from impl.feature_engine.feature_extractor import HistogramFeatureExtractor
 from impl.feature_engine.subimage_extractor import VerticalSplit

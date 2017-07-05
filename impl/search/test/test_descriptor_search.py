@@ -1,7 +1,7 @@
 from unittest import mock
 from unittest.mock import call
 
-from impl.domain.descriptor import Descriptor
+from kolasimagecommon import Descriptor
 from impl.domain.image_region import ImageRegion
 from impl.search.cleaned_search_result import CleanedSearchResult
 from impl.search.descriptor_search import DescriptorSearch

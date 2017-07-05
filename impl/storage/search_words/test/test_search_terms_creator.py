@@ -3,7 +3,7 @@ from unittest.mock import MagicMock
 
 import numpy as np
 
-from impl.domain.descriptor import Descriptor
+from kolasimagecommon import Descriptor
 from impl.storage.search_words.search_terms_creator import SearchTermsCreator
 
 

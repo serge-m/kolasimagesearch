@@ -1,12 +1,9 @@
 from typing import Dict, List
 
-import numpy as np
+from elasticsearch import Elasticsearch, ElasticsearchException, NotFoundError
+from kolasimagecommon import Descriptor
 
 import config
-
-from elasticsearch import Elasticsearch, ElasticsearchException, NotFoundError
-
-from impl.domain.descriptor import Descriptor
 
 
 class ElasticSearchDriverException(RuntimeError):

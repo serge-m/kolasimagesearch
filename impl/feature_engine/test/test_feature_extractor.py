@@ -4,7 +4,7 @@ from unittest import mock
 import numpy as np
 import pytest
 
-from impl.domain.descriptor import Descriptor
+from kolasimagecommon import Descriptor
 from impl.feature_engine.feature_extractor import HistogramFeatureExtractor, calculate_histogram_1d, \
     HistogramBasedFeatureExtractorException
 

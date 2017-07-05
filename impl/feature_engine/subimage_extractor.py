@@ -2,18 +2,14 @@ from typing import List
 
 import numpy as np
 
-from impl.feature_engine.subimage import SubImage
+from kolasimagecommon import SubImage
+from kolasimagecommon import SubimageExtractor
 
 WIDTH_INDEX = 1
 
 
 class SubimageExtractorException(Exception):
     pass
-
-
-class SubimageExtractor:
-    def extract(self, image: np.ndarray) -> List[SubImage]:
-        raise NotImplementedError
 
 
 class VerticalSplit(SubimageExtractor):

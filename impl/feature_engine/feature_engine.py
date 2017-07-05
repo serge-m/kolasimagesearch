@@ -1,6 +1,6 @@
 from typing import List
 
-from impl.domain.descriptor import Descriptor
+from kolasimagecommon import Descriptor
 
 
 def save_image(param):

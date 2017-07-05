@@ -2,7 +2,8 @@ from typing import List
 
 import numpy as np
 
-from impl.domain.descriptor import Descriptor
+from kolasimagecommon import Descriptor
+from kolasimagecommon import FeatureExtractor
 
 
 class HistogramBasedFeatureExtractorException(RuntimeError):
@@ -36,11 +37,6 @@ def get_channels(image) -> List[np.ndarray]:
     else:
         raise HistogramBasedFeatureExtractorException("Unsupported image dimensions: {}".format(image.shape))
     return channels
-
-
-class FeatureExtractor:
-    def calculate(self, image: np.ndarray) -> Descriptor:
-        raise NotImplementedError
 
 
 class HistogramFeatureExtractor(FeatureExtractor):

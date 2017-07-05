@@ -1,6 +1,6 @@
 from typing import Dict
 
-from impl.domain.descriptor import Descriptor
+from kolasimagecommon import Descriptor
 from impl.domain.image_region import ImageRegion
 from impl.storage.elastic_search_driver import SearchResult
 from impl.storage.search_words.search_terms_creator import SearchTermsCreator

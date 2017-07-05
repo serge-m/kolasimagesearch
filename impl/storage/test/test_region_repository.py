@@ -1,6 +1,6 @@
 from unittest import mock
 
-from impl.domain.descriptor import Descriptor
+from kolasimagecommon import Descriptor
 from impl.domain.image_region import ImageRegion
 from impl.storage.elastic_search_driver import SearchResult
 from impl.storage.region_repository import RegionRepository

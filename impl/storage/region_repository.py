@@ -1,7 +1,7 @@
 from typing import List
 
 import config
-from impl.domain.descriptor import Descriptor
+from kolasimagecommon import Descriptor
 from impl.domain.image_region import ImageRegion
 from impl.storage.elastic_search_driver import ElasticSearchDriver, SearchResult
 from impl.storage.image_region_serializer import ImageRegionSerializer

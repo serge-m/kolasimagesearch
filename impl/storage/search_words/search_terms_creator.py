@@ -4,7 +4,7 @@ import numpy as np
 
 import config_descriptors
 
-from impl.domain.descriptor import Descriptor
+from kolasimagecommon import Descriptor
 from impl.storage.search_words.quantizer import Quantizer
 from impl.storage.search_words.words_composer import WordsComposer
 

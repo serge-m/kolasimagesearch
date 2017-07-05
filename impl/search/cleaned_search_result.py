@@ -2,7 +2,7 @@ from typing import List
 
 import numpy as np
 
-from impl.domain.descriptor import Descriptor
+from kolasimagecommon import Descriptor
 from impl.domain.image_region import ImageRegion
 from impl.storage.elastic_search_driver import SearchResult
 

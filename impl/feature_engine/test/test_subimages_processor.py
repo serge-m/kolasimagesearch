@@ -3,10 +3,10 @@ from unittest.mock import call
 
 import numpy as np
 
-from impl.domain.descriptor import Descriptor
+from kolasimagecommon import Descriptor
 from impl.domain.image_region import ImageRegion
 from impl.feature_engine.feature_extractor import FeatureExtractor
-from impl.feature_engine.subimage import SubImage
+from kolasimagecommon import SubImage
 from impl.feature_engine.subimage_processor import SubimagesProcessor
 
 mocked_feature_extractor = mock.create_autospec(spec=FeatureExtractor)

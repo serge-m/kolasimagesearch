@@ -1,10 +1,8 @@
 from typing import List
 
-import numpy as np
-
 from impl.domain.image_region import ImageRegion
-from impl.feature_engine.feature_extractor import FeatureExtractor
-from impl.feature_engine.subimage import SubImage
+from kolasimagecommon import FeatureExtractor
+from kolasimagecommon import SubImage
 
 
 class SubimagesProcessor:

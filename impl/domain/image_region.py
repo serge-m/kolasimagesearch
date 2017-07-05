@@ -1,4 +1,4 @@
-from impl.domain.descriptor import Descriptor
+from kolasimagecommon import Descriptor
 
 
 class ImageRegion:
