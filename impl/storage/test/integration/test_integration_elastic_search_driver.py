@@ -37,9 +37,14 @@ class TestIntegrationElasticSearchDriver:
 
         driver.index(self.doc1)
         driver.index(self.doc2)
-        time.sleep(4)
-        search_results = driver.search_by_words({"word2": "value2shared"}, ["word1", "word2", "word3"])
 
+        for attempt in range(10):
+            search_results = driver.search_by_words({"word2": "value2shared"}, ["word1", "word2", "word3"])
+            time.sleep(1)
+            if len(search_results) == 2:
+                break
+        else:
+            assert False, "Unable to fetch results in a reasonable time "
         assert search_results == [SearchResult(self.payload1), SearchResult(self.payload2)]
 
     def test_put_and_get(self, unique_temp_index):

@@ -1,5 +1,6 @@
+from typing import List
 from unittest import mock
-from unittest.mock import call
+from unittest.mock import call, ANY
 
 import pytest
 from elasticsearch import Elasticsearch, ConnectionError
@@ -110,10 +111,10 @@ class TestElasticSearchDriver:
                                                                               body={
                                                                                   'query': {
                                                                                       'bool': {
-                                                                                          'should': [
+                                                                                          'should': ListInAnyOrder([
                                                                                               {"term": {word1: value1}},
-                                                                                              {"term": {word2: value2}}
-                                                                                          ]
+                                                                                              {"term": {word2: value2}},
+                                                                                          ])
                                                                                       }
                                                                                   },
                                                                                   '_source': {
@@ -121,3 +122,21 @@ class TestElasticSearchDriver:
                                                                               },
                                                                               size=size,
                                                                               timeout='10s')
+
+
+class ListInAnyOrder:
+    def __init__(self, expected: List):
+        self.expected = expected
+
+    def __eq__(self, other):
+        current_expected = self.expected[:]
+        for elem in other:
+            try:
+                current_expected.remove(elem)
+            except ValueError:
+                return False
+        if current_expected:
+            return False
+
+        return True
+
