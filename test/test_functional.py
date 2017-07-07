@@ -9,7 +9,7 @@ from pytest import mark
 
 from app import app
 from impl.domain.source_image_metadata import EMPTY_METADATA
-from test.test_image_processor import expected_search_result
+from kolasimagesearch.test.test_image_processor import expected_search_result
 
 current_dir_path = os.path.dirname(os.path.realpath(__file__))
 

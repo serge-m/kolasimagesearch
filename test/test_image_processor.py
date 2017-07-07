@@ -42,7 +42,7 @@ class TestImageProcessor:
         feature_engine.return_value.extract_features.return_value = self.list_descriptors
         descriptor_search.return_value.find_similar.return_value = expected_search_result
 
-        result = ImageProcessor(True)
+        result = ImageProcessor(flush_data=True)
 
         descriptor_search.assert_called_once_with(save_data=True, flush_data=True)
         source_image_storage.assert_called_once_with(flush_data=True)
