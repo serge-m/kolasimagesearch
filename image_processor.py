@@ -1,24 +1,12 @@
 from impl.domain.source_image_metadata import SourceImageMetadata
-from impl.feature_engine.feature_extractor import HistogramFeatureExtractor
-from impl.feature_engine.subimage_extractor import VerticalSplit
 from impl.feature_engine.subimage_feature_engine import SubimageFeatureEngine
+from impl.processors_factory import ProcessorsFactory
 from impl.search.descriptor_search import DescriptorSearch
 from impl.storage.source_image_storage import SourceImageStorage
 
 
 def normalize(image: bytes) -> bytes:
     return image
-
-
-class ProcessorsFactory:
-    def __init__(self):
-        pass
-
-    def create_feature_extractor(self):
-        return HistogramFeatureExtractor()
-
-    def create_subimage_extractor(self):
-        return VerticalSplit()
 
 
 class ImageProcessor:
