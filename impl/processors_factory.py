@@ -4,7 +4,7 @@ import importlib
 from kolasimagecommon import FeatureExtractor
 from kolasimagecommon import SubimageExtractor
 
-import config
+import config as default_config
 
 
 def load_class_from_module(module_path: str, target_class: type) -> type:
@@ -27,7 +27,7 @@ def get_all_classes_implementing_interface(module, target_class: type) -> List[t
 
 
 class ProcessorsFactory:
-    def __init__(self):
+    def __init__(self, config=default_config):
         # TODO add import by class name
         self.cls_subimage_extractor = load_class_from_module(config.SUBIMAGE_EXTRACTOR_MODULE, SubimageExtractor)
         self.cls_feature_extractor = load_class_from_module(config.FEATURE_EXTRACTOR_MODULE, FeatureExtractor)
