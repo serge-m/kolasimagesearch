@@ -14,8 +14,12 @@ class SearchResultWithDistance:
         self._distance = self._calculate_distance(image_region.descriptor, search_result.descriptor)
 
     @property
-    def distance(self):
+    def distance(self) -> float:
         return self._distance
+
+    @property
+    def source_id(self) -> str:
+        return self._search_result.source_id
 
     # noinspection PyMethodMayBeStatic
     def _calculate_distance(self, descriptor_reference: Descriptor, descriptor: Descriptor) -> float:

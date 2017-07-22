@@ -35,6 +35,11 @@ class SearchResult:
     def __str__(self):
         return "SearchResult(data={})".format(self._data)
 
+    def __lt__(self, other):
+        if isinstance(other, SearchResult):
+            return self._data < other._data
+        return NotImplementedError("Comparison not implemented for types other then SearchResult")
+
 
 class ElasticSearchDriver:
     FILED_ID = "_id"

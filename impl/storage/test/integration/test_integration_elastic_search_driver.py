@@ -3,8 +3,6 @@ import time
 import pytest
 
 from impl.storage.elastic_search_driver import ElasticSearchDriver, ElasticSearchDriverException, SearchResult
-
-# noinspection PyUnresolvedReferences
 from impl.test.elastic_fixtures import unique_temp_index, index_name
 
 
@@ -34,7 +32,6 @@ class TestIntegrationElasticSearchDriver:
 
     def test_search_by_words_works(self, unique_temp_index):
         driver = ElasticSearchDriver(unique_temp_index, "some-doc-type")
-
         driver.index(self.doc1)
         driver.index(self.doc2)
 
@@ -45,7 +42,9 @@ class TestIntegrationElasticSearchDriver:
                 break
         else:
             assert False, "Unable to fetch results in a reasonable time "
-        assert search_results == [SearchResult(self.payload1), SearchResult(self.payload2)]
+
+        assert sorted(search_results, key=lambda x: x.source_id) == \
+               sorted([SearchResult(self.payload1), SearchResult(self.payload2)], key=lambda x: x.source_id)
 
     def test_put_and_get(self, unique_temp_index):
         driver = ElasticSearchDriver(unique_temp_index, "some-doc-type")

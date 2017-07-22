@@ -10,13 +10,13 @@ app = Flask(__name__)
 def upload_file():
     if request.method == 'POST':
         file_content = _get_file_content(request)
-        search_result = ImageProcessor().process(file_content, EMPTY_METADATA)
-        return jsonify(search_result)
+        search_results = ImageProcessor().process(file_content, EMPTY_METADATA)
+        return jsonify(search_results)
 
     return '''Post image to this endpoint'''
 
 
-def _get_file_content(flask_request):
+def _get_file_content(flask_request) -> bytes:
     file_received = flask_request.files['file']
     file_content = file_received.read()
     return file_content
@@ -25,3 +25,7 @@ def _get_file_content(flask_request):
 @app.route('/')
 def root():
     return "Hello, World!"
+
+
+if __name__ == "__main__":
+    app.run()
