@@ -22,11 +22,17 @@ class DescriptorSearch:
         return [self._find_similar_and_save_if_needed(region) for region in image_regions]
 
     def _find_similar_and_save_if_needed(self, region: ImageRegion) -> CleanedSearchResult:
-        res = self._find_region(region)
+        logger = logging.getLogger(__name__)
+
+        res = self._find_similar_for_region(region)
+        logger.info("Found {} matches".format(res.length()))
+
         if self._save_data and not res.has_duplicates():
-            self._repository.save(region)
+            region_reference = self._repository.save(region)
+            logger.info("Region saved with reference {}".format(region_reference))
         return res
 
-    def _find_region(self, region: ImageRegion) -> CleanedSearchResult:
+    def _find_similar_for_region(self, region: ImageRegion) -> CleanedSearchResult:
         found_by_words = self._repository.find(region.descriptor)
+
         return CleanedSearchResult(region, found_by_words)

@@ -43,3 +43,6 @@ class CleanedSearchResult:
 
     def get_similar(self) -> List[SearchResultWithDistance]:
         return self._sorted
+
+    def length(self):
+        return len(self._sorted)
