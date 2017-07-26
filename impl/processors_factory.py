@@ -32,15 +32,19 @@ class ProcessorsFactory:
         # TODO add import by class name
         self.cls_subimage_extractor = load_class_from_module(config.SUBIMAGE_EXTRACTOR_MODULE, SubimageExtractor)
         self.cls_feature_extractor = load_class_from_module(config.FEATURE_EXTRACTOR_MODULE, FeatureExtractor)
+        self.subimage_extractor_params = config.SUBIMAGE_EXTRACTOR_PARAMETERS
+        self.feature_extractor_params = config.FEATURE_EXTRACTOR_PARAMETERS
 
     def create_feature_extractor(self):
         logger = logging.getLogger(__name__)
-        logger.info("Building feature extractor from {}".format(self.cls_feature_extractor))
+        logger.info("Building feature extractor "
+                    "from {} with {}".format(self.cls_feature_extractor, self.feature_extractor_params))
 
-        return self.cls_feature_extractor()
+        return self.cls_feature_extractor(**self.feature_extractor_params)
 
     def create_subimage_extractor(self) -> SubimageExtractor:
         logger = logging.getLogger(__name__)
-        logger.info("Building subimage extractor from {}".format(self.cls_subimage_extractor))
+        logger.info("Building subimage extractor "
+                    "from {} with {}".format(self.cls_subimage_extractor, self.subimage_extractor_params))
 
-        return self.cls_subimage_extractor()
+        return self.cls_subimage_extractor(**self.subimage_extractor_params)
