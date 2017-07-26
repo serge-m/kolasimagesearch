@@ -1,5 +1,6 @@
 from typing import Dict, List
 
+import logging
 from elasticsearch import Elasticsearch, ElasticsearchException, NotFoundError
 from kolasimagecommon import Descriptor
 
@@ -46,6 +47,10 @@ class ElasticSearchDriver:
     FILED_SOURCE = "_source"
 
     def __init__(self, index: str, doc_type: str, elastic_search: Elasticsearch = None, flush_data=False):
+        logger = logging.getLogger(__name__)
+        logger.info("Init ElasticSearchDriver for "
+                    "index {}, doc_type {}, flush_data {}".format(index, doc_type, flush_data))
+
         self._flush_data = flush_data
         self._type = doc_type
         self._index = index

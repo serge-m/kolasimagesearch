@@ -2,6 +2,9 @@ from flask import Flask, request, jsonify
 
 from image_processor import ImageProcessor
 from impl.domain.source_image_metadata import EMPTY_METADATA
+import logging.config
+from logging_config import logging_config
+
 
 app = Flask(__name__)
 
@@ -28,4 +31,5 @@ def root():
 
 
 if __name__ == "__main__":
+    logging.config.dictConfig(logging_config)
     app.run()

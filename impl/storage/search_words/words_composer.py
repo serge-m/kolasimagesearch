@@ -1,3 +1,4 @@
+import logging
 import numpy as np
 
 
@@ -10,6 +11,12 @@ class WordsComposer:
     _MAX_VALUE = np.iinfo(_DESTINATION_TYPE).max
 
     def __init__(self, number_of_words, word_length, number_of_levels):
+        logger = logging.getLogger(__name__)
+        logger.info("Init WordsComposer for "
+                    "number_of_words {}, "
+                    "word_length {}, "
+                    "number_of_levels {}".format(number_of_words, word_length, number_of_levels))
+
         self._word_length = word_length
         self._number_of_words = number_of_words
         self._number_of_levels = number_of_levels

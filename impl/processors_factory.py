@@ -1,6 +1,7 @@
 from typing import List
 
 import importlib
+import logging
 from kolasimagecommon import FeatureExtractor
 from kolasimagecommon import SubimageExtractor
 
@@ -33,7 +34,13 @@ class ProcessorsFactory:
         self.cls_feature_extractor = load_class_from_module(config.FEATURE_EXTRACTOR_MODULE, FeatureExtractor)
 
     def create_feature_extractor(self):
+        logger = logging.getLogger(__name__)
+        logger.info("Building feature extractor from {}".format(self.cls_feature_extractor))
+
         return self.cls_feature_extractor()
 
     def create_subimage_extractor(self) -> SubimageExtractor:
+        logger = logging.getLogger(__name__)
+        logger.info("Building subimage extractor from {}".format(self.cls_subimage_extractor))
+
         return self.cls_subimage_extractor()

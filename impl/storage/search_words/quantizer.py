@@ -1,3 +1,4 @@
+import logging
 import numpy as np
 
 
@@ -10,6 +11,9 @@ class Quantizer:
     _MAX_NUMBER_OF_LEVELS = np.iinfo(_DESTINATION_TYPE).max / 4
 
     def __init__(self, number_of_levels):
+        logger = logging.getLogger(__name__)
+        logger.info("Init Quantizer for number_of_levels={}".format(number_of_levels))
+
         self._number_of_levels = number_of_levels
         if self._number_of_levels < 0 or self._number_of_levels > self._MAX_NUMBER_OF_LEVELS:
             raise QuantizerException("Unsupported number of levels: '{}'".format(self._number_of_levels))

@@ -2,6 +2,7 @@ import config
 from impl.domain.source_image_metadata import SourceImageMetadata, EMPTY_METADATA
 from impl.storage.elastic_search_driver import ElasticSearchDriver
 from kolasimagestorage.image_service import ImageService
+import logging
 
 LOCATION_FIELD = "location"
 
@@ -15,11 +16,17 @@ def create_doc(metadata: SourceImageMetadata, path_image: str) -> dict:
 
 class SourceImageStorage:
     def __init__(self, flush_data=False):
+        logger = logging.getLogger(__name__)
+        logger.info("Init SourceImageStorage")
+
         self._storage_service = ImageService(url=config.FILE_SERVICE_URL)
         self._es = ElasticSearchDriver(index=config.ELASTIC_SOURCE_IMAGES_INDEX, doc_type=config.ELASTIC_SOURCE_IMAGES_TYPE,
                                        flush_data=flush_data)
 
     def save_source_image(self, image: bytes, metadata: SourceImageMetadata) -> str:
+        logger = logging.getLogger(__name__)
+        logger.info("Saving source image with metadata {}".format(metadata))
+
         if metadata is not EMPTY_METADATA:
             raise NotImplementedError("Non empty metadata is not supported")
         path_image = self._storage_service.put_encoded(image)

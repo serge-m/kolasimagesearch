@@ -1,6 +1,6 @@
-{
+logging_config = {
     "version": 1,
-    "disable_existing_loggers": false,
+    "disable_existing_loggers": False,
     "formatters": {
         "simple": {
             "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
@@ -17,21 +17,21 @@
             "class": "logging.handlers.RotatingFileHandler",
             "level": "INFO",
             "formatter": "simple",
-            "filename": "info.log",
+            "filename": "log.txt",
             "maxBytes": 10485760,
             "backupCount": 20,
             "encoding": "utf8"
         }
     },
     "loggers": {
-        "my_module": {
-            "level": "ERROR",
-            "handlers": ["console"],
-            "propagate": "no"
+        "werkzeug": {
+            "level": "INFO",
+            "handlers": ["console", "info_file_handler"],
+            "propagate": False
         }
     },
     "root": {
         "level": "INFO",
-        "handlers": ["console", "info_file_handler", "error_file_handler"]
+        "handlers": ["console", "info_file_handler"]
     }
 }
