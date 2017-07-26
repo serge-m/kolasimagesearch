@@ -4,7 +4,7 @@ from impl.domain.image_region import ImageRegion
 from impl.feature_engine.feature_extractor import FeatureExtractor
 from impl.feature_engine.subimage_extractor import SubimageExtractor
 from impl.feature_engine.subimage_processor import SubimagesProcessor
-from kolasimagesearch.impl.feature_engine.feature_engine import FeatureEngine
+from impl.feature_engine.feature_engine import FeatureEngine
 from kolasimagestorage.image_encoder import ImageEncoder
 
 

@@ -5,8 +5,8 @@ from impl.domain.source_image_metadata import EMPTY_METADATA
 import logging.config
 from logging_config import logging_config
 
-
 app = Flask(__name__)
+logging.config.dictConfig(logging_config)
 
 
 @app.route('/api/search', methods=['POST'])
@@ -31,5 +31,4 @@ def root():
 
 
 if __name__ == "__main__":
-    logging.config.dictConfig(logging_config)
     app.run()
