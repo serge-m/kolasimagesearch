@@ -9,7 +9,8 @@ descriptor_shape = [1, 2, 35]
 
 
 class TestRegionRepository:
-    descriptor1 = Descriptor([1])
+    descriptor_as_list = [[1, 2, 3], [12, 12, 34]]
+    descriptor1 = Descriptor(descriptor_as_list)
     image_region = ImageRegion(descriptor1, "ref1")
     expected_image_region_elastic_id = "some_image_region_elastic_id"
     serialized_dict = {"key": "value"}
@@ -35,7 +36,7 @@ class TestRegionRepository:
                                                            doc_type=mock_config.ELASTIC_DESCRIPTOR_TYPE,
                                                            flush_data=False)
         mock_elastic_search_driver.return_value.index.assert_called_once_with(
-            {'descriptor': self.descriptor1.vector,
+            {'descriptor': self.descriptor_as_list,
              'key': 'value',
              'source_id': self.image_region.source_image_reference
              }

@@ -28,7 +28,7 @@ class RegionRepository:
     def _create_doc(self, image_region: ImageRegion) -> Dict[str, object]:
         quantized_words = self._search_terms_creator.get_dictionary_of_words(image_region.descriptor)
         base = {SearchResult.FIELD_SOURCE_ID: image_region.source_image_reference,
-                SearchResult.FIELD_DESCRIPTOR: list(image_region.descriptor.vector)}
+                SearchResult.FIELD_DESCRIPTOR: image_region.descriptor.vector_as_lists}
         return dict(**base, **quantized_words)
 
     def _get_words(self, descriptor: Descriptor) -> Dict[str, object]:
