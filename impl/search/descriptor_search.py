@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Iterable
 
 import logging
 
@@ -8,12 +8,15 @@ from impl.storage.region_repository import RegionRepository
 
 
 class DescriptorSearch:
-    def __init__(self, save_data: bool, flush_data: bool = False):
+    def __init__(self,
+                 save_data: bool,
+                 descriptor_shape: Iterable[int],
+                 flush_data: bool = False):
         logger = logging.getLogger(__name__)
         logger.info("Init DescriptorSearch, save_data {}, flush_data {}".format(save_data, flush_data))
 
         self._save_data = save_data
-        self._repository = RegionRepository(flush_data=flush_data)
+        self._repository = RegionRepository(descriptor_shape, flush_data=flush_data)
 
     def find_similar(self, image_regions: List[ImageRegion]) -> List[CleanedSearchResult]:
         logger = logging.getLogger(__name__)

@@ -34,7 +34,7 @@ class TestImageProcessor:
 
         result = ImageProcessor().process(self.image, self.metadata)
 
-        descriptor_search.assert_called_once_with(save_data=True, flush_data=False)
+        descriptor_search.assert_called_once_with(descriptor_shape=(16*3,), save_data=True, flush_data=False)
         descriptor_search.return_value.find_similar.assert_called_once_with(self.list_descriptors)
         feature_engine.assert_called_once_with(HistogramFeatureExtractor(), VerticalSplit())
         feature_engine.return_value.extract_features.assert_called_once_with(self.expected_normalized, self.ref_source)
@@ -64,5 +64,5 @@ class TestImageProcessor:
 
         result = ImageProcessor(flush_data=True)
 
-        descriptor_search.assert_called_once_with(save_data=True, flush_data=True)
+        descriptor_search.assert_called_once_with(descriptor_shape=(48,), save_data=True, flush_data=True)
         source_image_storage.assert_called_once_with(flush_data=True)

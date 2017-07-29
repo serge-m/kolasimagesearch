@@ -36,10 +36,10 @@ class TestDescriptorSearch:
         cleaned_search_result.side_effect = [search_result1, search_result2]
         region_repository.return_value.find.side_effect = self.list_search_results
 
-        similar = DescriptorSearch(save_data=True).find_similar(self.list_image_regions)
+        similar = DescriptorSearch(save_data=True, descriptor_shape=(16*3,)).find_similar(self.list_image_regions)
 
         assert similar == [search_result1, search_result2]
-        region_repository.assert_called_once_with(flush_data=False)
+        region_repository.assert_called_once_with((48,), flush_data=False)
         region_repository.return_value.find.assert_has_calls([call(self.descriptor1),
                                                               call(self.descriptor2)])
         region_repository.return_value.save.assert_has_calls([call(search_result2)])
@@ -52,10 +52,10 @@ class TestDescriptorSearch:
         cleaned_search_result.side_effect = [search_result1, search_result2]
         region_repository.return_value.find.side_effect = self.list_search_results
 
-        similar = DescriptorSearch(save_data=False).find_similar(self.list_image_regions)
+        similar = DescriptorSearch(save_data=False, descriptor_shape=(16*3,)).find_similar(self.list_image_regions)
 
         assert similar == [search_result1, search_result2]
-        region_repository.assert_called_once_with(flush_data=False)
+        region_repository.assert_called_once_with((16*3,),flush_data=False)
         region_repository.return_value.find.assert_has_calls([call(self.descriptor1),
                                                               call(self.descriptor2)])
         region_repository.return_value.save.assert_has_calls([])

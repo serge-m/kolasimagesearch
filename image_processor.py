@@ -15,9 +15,11 @@ def normalize(image: bytes) -> bytes:
 class ImageProcessor:
     def __init__(self, processors_factory=ProcessorsFactory(), flush_data=False):
         self._source_image_storage = SourceImageStorage(flush_data=flush_data)
-        self._feature_engine = SubimageFeatureEngine(processors_factory.create_feature_extractor(),
+        extractor = processors_factory.create_feature_extractor()
+        self._feature_engine = SubimageFeatureEngine(extractor,
                                                      processors_factory.create_subimage_extractor())
-        self._search_service = DescriptorSearch(save_data=True, flush_data=flush_data)
+        self._search_service = DescriptorSearch(save_data=True, flush_data=flush_data,
+                                                descriptor_shape=extractor.descriptor_shape())
 
     def process(self, image: bytes, metadata: SourceImageMetadata) -> List[Dict[str, object]]:
         normalized = normalize(image)

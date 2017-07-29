@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Iterable
 
 import numpy as np
 
@@ -49,6 +49,9 @@ class HistogramFeatureExtractor(FeatureExtractor):
         vector_clipped = np.clip(vector * self._SCALE_FACTOR, 0.0, 1.0)
         descriptor = Descriptor(vector=vector_clipped)
         return descriptor
+
+    def descriptor_shape(self) -> Iterable[int]:
+        return 16 * 3,
 
     def __eq__(self, other):
         if isinstance(other, HistogramFeatureExtractor):

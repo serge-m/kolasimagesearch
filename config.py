@@ -4,7 +4,7 @@ import json
 FILE_SERVICE_PARAMETERS = {
     "driver_name": os.environ.get("driver_name", "local"),
     "storage_driver_parameters": {
-        "key": os.environ.get("driver_key", "kolasstorage"),
+        "key": os.environ.get("driver_key", "./"),
     },
     "container_name": os.environ.get("container_name", "default"),
 }

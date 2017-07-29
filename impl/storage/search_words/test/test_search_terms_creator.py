@@ -9,13 +9,14 @@ from impl.storage.search_words.search_terms_creator import SearchTermsCreator
 
 def create_mocked_config():
     mocked_config_ = MagicMock()
-    mocked_config_.DESCRIPTOR_LENGTH = 6
     mocked_config_.LENGTH_OF_WORD = 2
     mocked_config_.NUMBER_OF_LEVELS = 4
     return mocked_config_
 
 
 mocked_config = create_mocked_config()
+
+DESCRIPTOR_LENGTH = (123, 3, 5)
 
 
 @mock.patch('impl.storage.search_words.search_terms_creator.config_descriptors', new=mocked_config)
@@ -30,7 +31,7 @@ class TestSearchTermsCreator:
         mocked_words_composer.return_value.compose.return_value = self.composed_values
         mocked_quantizer.return_value.quantize_vector.return_value = self.quantized_vector
 
-        quantizer = SearchTermsCreator()
+        quantizer = SearchTermsCreator(DESCRIPTOR_LENGTH)
         words = quantizer.get_dictionary_of_words(self.descriptor)
 
         assert isinstance(words, dict)
@@ -39,7 +40,7 @@ class TestSearchTermsCreator:
                          "word_0001": self.composed_values[1],
                          "word_0002": self.composed_values[2],
                          }
-        mocked_words_composer.assert_called_once_with(mocked_config.DESCRIPTOR_LENGTH,
+        mocked_words_composer.assert_called_once_with(np.prod(DESCRIPTOR_LENGTH),
                                                       mocked_config.LENGTH_OF_WORD,
                                                       mocked_config.NUMBER_OF_LEVELS)
         mocked_words_composer.return_value.compose.assert_called_once_with(self.quantized_vector)
