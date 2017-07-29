@@ -9,7 +9,7 @@ class TestWordsComposer:
     number_of_levels_large = 64000
 
     def test_composes_zero_array(self):
-        composer = WordsComposer(1, 2, self.number_of_levels)
+        composer = WordsComposer(2, 2, self.number_of_levels)
         result = composer.compose(np.array([0, 0]))
         assert np.array_equal(result, [0])
 
@@ -17,7 +17,7 @@ class TestWordsComposer:
         val1 = self.number_of_levels_large - 1
         val2 = self.number_of_levels_large - 1
 
-        composer = WordsComposer(1, 2, self.number_of_levels_large)
+        composer = WordsComposer(2, 2, self.number_of_levels_large)
         result = composer.compose(np.array([val1, val2]))
 
         assert np.array_equal(result, [val1 + self.number_of_levels_large * val2])
@@ -28,7 +28,7 @@ class TestWordsComposer:
         value2b = 2
         value3 = 3
 
-        composer = WordsComposer(3, 2, self.number_of_levels)
+        composer = WordsComposer(6, 2, self.number_of_levels)
         result = composer.compose(np.array([value1, value1, value2a, value2b, value3, value3]))
 
         assert np.array_equal(result, [value1 + self.number_of_levels * value1,

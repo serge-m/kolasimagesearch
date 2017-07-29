@@ -1,6 +1,6 @@
 py>=1.4.33
 pytest>=3.0.7
-kolasimagestorage>=0.0.1
-kolasimagecommon==0.0.2
+kolasimagestorage>=0.0.2
+kolasimagecommon==0.0.3
 numpy
 elasticsearch

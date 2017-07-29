@@ -1,7 +1,5 @@
 from typing import Dict
 
-import numpy as np
-
 import config_descriptors
 
 from kolasimagecommon import Descriptor
@@ -18,7 +16,7 @@ class SearchTermsCreator:
 
     def __init__(self):
         self.quantizer = Quantizer(config_descriptors.NUMBER_OF_LEVELS)
-        self.words_composer = WordsComposer(config_descriptors.NUMBER_OF_WORDS,
+        self.words_composer = WordsComposer(config_descriptors.DESCRIPTOR_LENGTH,
                                             config_descriptors.LENGTH_OF_WORD,
                                             config_descriptors.NUMBER_OF_LEVELS)
 

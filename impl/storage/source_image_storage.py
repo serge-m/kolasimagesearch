@@ -1,7 +1,7 @@
 import config
 from impl.domain.source_image_metadata import SourceImageMetadata, EMPTY_METADATA
 from impl.storage.elastic_search_driver import ElasticSearchDriver
-from kolasimagestorage.image_service import ImageService
+from kolasimagestorage import ImageService, StorageParameters
 import logging
 
 LOCATION_FIELD = "location"
@@ -19,7 +19,7 @@ class SourceImageStorage:
         logger = logging.getLogger(__name__)
         logger.info("Init SourceImageStorage")
 
-        self._storage_service = ImageService(url=config.FILE_SERVICE_URL)
+        self._storage_service = ImageService(storage_params=StorageParameters(**config.FILE_SERVICE_PARAMETERS))
         self._es = ElasticSearchDriver(index=config.ELASTIC_SOURCE_IMAGES_INDEX, doc_type=config.ELASTIC_SOURCE_IMAGES_TYPE,
                                        flush_data=flush_data)
 

@@ -9,7 +9,7 @@ from impl.storage.search_words.search_terms_creator import SearchTermsCreator
 
 def create_mocked_config():
     mocked_config_ = MagicMock()
-    mocked_config_.NUMBER_OF_WORDS = 3
+    mocked_config_.DESCRIPTOR_LENGTH = 6
     mocked_config_.LENGTH_OF_WORD = 2
     mocked_config_.NUMBER_OF_LEVELS = 4
     return mocked_config_
@@ -39,7 +39,7 @@ class TestSearchTermsCreator:
                          "word_0001": self.composed_values[1],
                          "word_0002": self.composed_values[2],
                          }
-        mocked_words_composer.assert_called_once_with(mocked_config.NUMBER_OF_WORDS,
+        mocked_words_composer.assert_called_once_with(mocked_config.DESCRIPTOR_LENGTH,
                                                       mocked_config.LENGTH_OF_WORD,
                                                       mocked_config.NUMBER_OF_LEVELS)
         mocked_words_composer.return_value.compose.assert_called_once_with(self.quantized_vector)

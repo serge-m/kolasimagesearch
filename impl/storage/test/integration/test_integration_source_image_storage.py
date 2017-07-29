@@ -7,7 +7,7 @@ from elasticsearch import Elasticsearch, RequestError, NotFoundError
 
 from impl.domain.source_image_metadata import EMPTY_METADATA
 from impl.storage.source_image_storage import SourceImageStorage, LOCATION_FIELD
-
+from kolasimagestorage import StorageParameters
 
 INDEX_NAME = 'test_environment_{}'.format(hashlib.md5(os.urandom(128)).hexdigest()[:12])
 
@@ -41,11 +41,17 @@ def es():
     return Elasticsearch()
 
 
-file_service_url = "some/url"
+FILE_SERVICE_PARAMETERS = {
+    "driver_name": "s3",
+    "storage_driver_parameters": {
+        "key": "driver_key"
+    },
+    "container_name": "container_name"
+}
 
 
 @mock.patch('impl.storage.source_image_storage.config.ELASTIC_SOURCE_IMAGES_INDEX', new=INDEX_NAME)
-@mock.patch('impl.storage.source_image_storage.config.FILE_SERVICE_URL', new=file_service_url)
+@mock.patch('impl.storage.source_image_storage.config.FILE_SERVICE_PARAMETERS', new=FILE_SERVICE_PARAMETERS)
 class TestSourceImageStorageWithElastic:
     image = b"asdasdasdasd"
     metadata = EMPTY_METADATA
@@ -58,7 +64,7 @@ class TestSourceImageStorageWithElastic:
 
         reference = SourceImageStorage().save_source_image(self.image, self.metadata)
 
-        mocked_image_service.assert_called_once_with(url=file_service_url)
+        mocked_image_service.assert_called_once_with(storage_params=StorageParameters(**FILE_SERVICE_PARAMETERS))
         mocked_image_service.return_value.put_encoded.assert_called_once_with(self.image)
 
         assert es.get(index=INDEX_NAME, doc_type="sources", id=reference)["_source"] == self.expected_data

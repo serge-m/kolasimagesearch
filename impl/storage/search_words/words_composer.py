@@ -10,15 +10,15 @@ class WordsComposer:
     _DESTINATION_TYPE = np.int
     _MAX_VALUE = np.iinfo(_DESTINATION_TYPE).max
 
-    def __init__(self, number_of_words, word_length, number_of_levels):
+    def __init__(self, descriptor_length, word_length, number_of_levels):
         logger = logging.getLogger(__name__)
         logger.info("Init WordsComposer for "
-                    "number_of_words {}, "
+                    "descriptor_length {}, "
                     "word_length {}, "
-                    "number_of_levels {}".format(number_of_words, word_length, number_of_levels))
+                    "number_of_levels {}".format(descriptor_length, word_length, number_of_levels))
 
         self._word_length = word_length
-        self._number_of_words = number_of_words
+        self._number_of_words = descriptor_length // word_length
         self._number_of_levels = number_of_levels
         self._vector_multiplier = self._build_multiplier(number_of_levels, word_length)
 

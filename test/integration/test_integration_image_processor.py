@@ -1,3 +1,7 @@
+import shutil
+
+import pytest
+import tempfile
 from io import BytesIO
 from typing import List
 from unittest import mock
@@ -50,6 +54,13 @@ def _generate_subimage(list_positions: List, list_colors: List):
     return img
 
 
+@pytest.fixture
+def temp_location_for_storage():
+    tmp_storage_location = tempfile.mkdtemp()
+    yield tmp_storage_location
+    shutil.rmtree(tmp_storage_location)
+
+
 h = 32
 w = 64
 num_channels = 3
@@ -85,12 +96,22 @@ class TestIntegrationImageProcessor:
 
     @mock.patch('impl.storage.source_image_storage.config')
     @mock.patch('impl.storage.region_repository.config')
-    def test_integration_image_processor(self, c2, c, unique_temp_index, another_unique_temp_index):
+    @mock.patch('impl.storage.search_words.search_terms_creator.config_descriptors')
+    def test_integration_image_processor(self, c3, c2, c, unique_temp_index, another_unique_temp_index, temp_location_for_storage):
         c.ELASTIC_SOURCE_IMAGES_INDEX = unique_temp_index
         c.ELASTIC_SOURCE_IMAGES_TYPE = "images_" + unique_temp_index
-        c.FILE_SERVICE_URL = "http://localhost:9333/"
+        c.FILE_SERVICE_PARAMETERS = {
+            "driver_name": "local",
+            "storage_driver_parameters": {
+                "key": temp_location_for_storage,
+            },
+            "container_name": "container",
+        }
         c2.ELASTIC_DESCRIPTOR_INDEX = another_unique_temp_index
         c2.ELASTIC_DESCRIPTOR_TYPE = "descriptors_" + another_unique_temp_index
+        c3.LENGTH_OF_WORD = 2
+        c3.NUMBER_OF_LEVELS = 4
+        c3.DESCRIPTOR_LENGTH = 16*3
 
         processor = ImageProcessor(flush_data=True)
         res1 = processor.process(images[0], EMPTY_METADATA)
@@ -108,5 +129,3 @@ class TestIntegrationImageProcessor:
 
         res3 = processor.process(images[0], EMPTY_METADATA)
         res4 = processor.process(images[2], EMPTY_METADATA)
-
-

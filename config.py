@@ -1,6 +1,14 @@
 import os
 import json
-FILE_SERVICE_URL = "http://localhost:9333/"
+
+FILE_SERVICE_PARAMETERS = {
+    "driver_name": os.environ.get("driver_name", "local"),
+    "storage_driver_parameters": {
+        "key": os.environ.get("driver_key", "kolasstorage"),
+    },
+    "container_name": os.environ.get("container_name", "default"),
+}
+
 ELASTIC_URL = "http://localhost:9200"
 ELASTIC_SOURCE_IMAGES_INDEX = "index"
 ELASTIC_SOURCE_IMAGES_TYPE = "sources"
