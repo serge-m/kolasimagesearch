@@ -1,0 +1,24 @@
+<p> page upl </p>
+
+
+{{file-upload url="/api/search" update_progress_bar=(action "update_progress_bar") set_upload_results=(action "set_upload_results")}}
+
+----
+
+{{ember-progress-bar progress=value}}
+
+<p>progress= {{value}}</p>
+
+
+{{#if upload_res}}
+    {{#if upload_res.success}}
+        {{#each upload_res.data as |rentalUnit|}}
+              <li>id={{rentalUnit.id}}, info={{rentalUnit.info}}, type={{rentalUnit.type}}</li>
+        {{/each}}
+    {{else}}
+        <h1>failed ({{upload_res.result}})</h1>
+        <p>Error: ({{upload_res.error}})</p>
+    {{/if}}
+{{else}}
+    <p>try it out</p>
+{{/if}}
