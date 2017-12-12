@@ -1,10 +1,13 @@
 class SourceImageMetadata:
-    def __init__(self):
-        self._path = "some_path"
+    def __init__(self, path:str=None):
+        self._path = path
+
+    def path(self):
+        return self._path
 
     def __eq__(self, other):
         if isinstance(other, SourceImageMetadata):
             return self._path == other._path
-        raise NotImplementedError("Comparison not implemented for a given type")
+        raise NotImplementedError("Comparison is not implemented for a given type")
 
 EMPTY_METADATA = SourceImageMetadata()

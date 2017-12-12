@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify
 
 from image_processor import ImageProcessor
-from impl.domain.source_image_metadata import EMPTY_METADATA
+from impl.domain.source_image_metadata import EMPTY_METADATA, SourceImageMetadata
 import logging.config
 from logging_config import logging_config
 
@@ -13,8 +13,11 @@ logging.config.dictConfig(logging_config)
 def upload_file():
     if request.method == 'POST':
         file_content = _get_file_content(request)
-        search_results = ImageProcessor().process(file_content, EMPTY_METADATA)
-        return jsonify(search_results)
+        metadata = SourceImageMetadata(path='https://upload.wikimedia.org/wikipedia/commons/a/ac/Peloric_Streptocarpus_flower.jpg')
+        search_results = ImageProcessor().process(file_content, metadata)
+        result = jsonify(search_results)
+        print(result)
+        return result
 
     return '''Post image to this endpoint'''
 
