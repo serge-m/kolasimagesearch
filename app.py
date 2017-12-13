@@ -15,9 +15,9 @@ def upload_file():
         file_content = _get_file_content(request)
         metadata = SourceImageMetadata(path='https://upload.wikimedia.org/wikipedia/commons/a/ac/Peloric_Streptocarpus_flower.jpg')
         search_results = ImageProcessor().process(file_content, metadata)
-        result = jsonify(search_results)
+        result = jsonify({'success': True, 'data': search_results})
         print(result)
-        return result
+        return result, 200
 
     return '''Post image to this endpoint'''
 
