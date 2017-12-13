@@ -1,18 +1,17 @@
 import config
-from impl.domain.source_image_metadata import SourceImageMetadata #, EMPTY_METADATA
+from impl.domain.source_image_metadata import SourceImageMetadata
 from impl.storage.elastic_search_driver import ElasticSearchDriver
 from kolasimagestorage import ImageService, StorageParameters
 import logging
 
-LOCATION_FIELD = 'id_cached'
-IMAGE_URL_FIELD = 'image_url'
+LOCATION_FIELD = "id_cached"
 
 
 # noinspection PyUnusedLocal
 def create_doc(metadata: SourceImageMetadata, id_cached: str) -> dict:
     return {
         LOCATION_FIELD: id_cached,
-        IMAGE_URL_FIELD: metadata.path(),
+
     }
 
 
@@ -32,3 +31,9 @@ class SourceImageStorage:
         id_cached = self._storage_service.put_encoded(image)
         source_image_elastic_id = self._es.index(create_doc(metadata, id_cached))
         return source_image_elastic_id
+
+    def get_metadata_by_id(self, image_id: str) -> dict:
+        logger = logging.getLogger(__name__)
+        logger.info("loading image with id {}".format(image_id))
+        metadata = self._es.get_doc(image_id)
+        return metadata

@@ -26,12 +26,20 @@ class ImageProcessor:
         ref_source = self._source_image_storage.save_source_image(normalized, metadata)
         image_regions = self._feature_engine.extract_features(normalized, ref_source)
         list_results = self._search_service.find_similar(image_regions)
-        return list(map(_get_references, list_results))
+        return [
+            {
+                "region": region_idx,
+                "found": self._get_references(search_result)
+            }
+            for region_idx, search_result in enumerate(list_results)
+        ]
 
 
-def _get_references(search_result: CleanedSearchResult) -> List[Dict[str, object]]:
+    def _get_references(self, search_result: CleanedSearchResult) -> List[Dict[str, object]]:
 
-    similar = search_result.get_similar()
-    return [{"distance": x.distance,
-             "source_id": x.source_id
-             } for x in similar]
+        similar = search_result.get_similar()
+
+        return [{"distance": x.distance,
+                "source_id": x.source_id,
+                "metadata": self._source_image_storage.get_metadata_by_id(x.source_id)
+                } for x in similar]
