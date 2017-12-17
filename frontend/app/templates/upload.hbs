@@ -18,9 +18,9 @@
             {{#each region_results.found as |similar_region|}}
                 <div>
                     <p>distance={{similar_region.distance}}</p>
-                    {{#if similar_region.metadata.image_url}}
-                        <a href="{{similar_region.metadata.image_url}}">
-                            <img src="{{similar_region.metadata.image_url}}" width="200" height="200"/>
+                    {{#if similar_region.metadata.url}}
+                        <a href="{{similar_region.metadata.url}}">
+                            <img src="{{similar_region.metadata.url}}" width="200" height="200"/>
                         </a>
                     {{else}}
                         <p>image missing</p>
