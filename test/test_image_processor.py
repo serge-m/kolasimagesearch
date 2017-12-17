@@ -31,10 +31,11 @@ class TestImageProcessor:
         source_image_storage.return_value.save_source_image.return_value = self.ref_source
         feature_engine.return_value.extract_features.return_value = self.list_descriptors
         descriptor_search.return_value.find_similar.return_value = [cleaned_result1, cleaned_result2]
+        source_image_storage.return_value.get_metadata_by_id.side_effect = [self.metadata] * 3
 
-        result = ImageProcessor().process(self.image, self.metadata)
+        result = ImageProcessor().add_and_search(self.image, self.metadata)
 
-        descriptor_search.assert_called_once_with(descriptor_shape=(16*3,), save_data=True, flush_data=False)
+        descriptor_search.assert_called_once_with(descriptor_shape=(16 * 3,), save_data=True, flush_data=False)
         descriptor_search.return_value.find_similar.assert_called_once_with(self.list_descriptors)
         feature_engine.assert_called_once_with(HistogramFeatureExtractor(), VerticalSplit())
         feature_engine.return_value.extract_features.assert_called_once_with(self.expected_normalized, self.ref_source)
@@ -42,16 +43,20 @@ class TestImageProcessor:
         source_image_storage.return_value.save_source_image.assert_called_once_with(self.expected_normalized,
                                                                                     self.metadata)
         assert result == [
-            [
-                {"distance": 5.0,
-                 "source_id": "id1"},
-                {"distance": 2.0,
-                 "source_id": "id2"},
-            ],
-            [
-                {"distance": 1.0,
-                 "source_id": "id3"},
-            ]
+            {
+                'found': [
+                    {"distance": 5.0, "source_id": "id1", "metadata": self.metadata.to_dict()},
+                    {"distance": 2.0, "source_id": "id2", "metadata": self.metadata.to_dict()},
+                ],
+                'region': 0
+            },
+            {
+                'found': [
+                    {"distance": 1.0, "source_id": "id3", "metadata": self.metadata.to_dict()},
+                ],
+                'region': 1
+            }
+
         ]
 
     @mock.patch('image_processor.SubimageFeatureEngine', spec=True)

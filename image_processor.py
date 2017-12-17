@@ -12,7 +12,6 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-
 def normalize(image: bytes) -> bytes:
     return image
 
@@ -37,8 +36,7 @@ class ImageProcessor:
                 "found": self._get_references(search_result)
             }
             for region_idx, search_result in enumerate(list_results)
-        ]
-
+            ]
 
     def add(self, url: str):
         logger.info('Adding image <<{}>> to the database'.format(url))
@@ -48,17 +46,13 @@ class ImageProcessor:
         ref_source = self._source_image_storage.save_source_image(normalized, metadata)
         self._feature_engine.extract_features(normalized, ref_source)
 
-
-
     def _get_references(self, search_result: CleanedSearchResult) -> List[Dict[str, object]]:
-
         similar = search_result.get_similar()
 
         return [{"distance": x.distance,
-                "source_id": x.source_id,
-                "metadata": self._source_image_storage.get_metadata_by_id(x.source_id)
-                } for x in similar]
-
+                 "source_id": x.source_id,
+                 "metadata": self._source_image_storage.get_metadata_by_id(x.source_id).to_dict()
+                 } for x in similar]
 
 
 class ImageProcessorError(Exception):
@@ -69,7 +63,7 @@ def download_image(url: str):
     timeout = 5
     max_size = 3000000
     r = requests.get(url, timeout=timeout, stream=True)
-    content = r.raw.read(max_size+1, decode_content=True)
+    content = r.raw.read(max_size + 1, decode_content=True)
     if len(content) > max_size:
-            raise ImageProcessorError('File is too large')
+        raise ImageProcessorError('File is too large')
     return content

@@ -7,8 +7,8 @@ from unittest import mock
 import pytest
 from pytest import mark
 
-from app import app
-from impl.domain.source_image_metadata import EMPTY_METADATA
+from app import app, DUMMY_IMAGE_URL
+from impl.domain.source_image_metadata import EMPTY_METADATA, SourceImageMetadata
 from kolasimagesearch.test.test_image_processor import expected_search_result
 
 current_dir_path = os.path.dirname(os.path.realpath(__file__))
@@ -70,12 +70,13 @@ class TestApp:
 
     @mock.patch('app.ImageProcessor', spec=True)
     def test_post_search_mocked(self, mocked_image_processor, client):
-        mocked_image_processor.return_value.process.return_value = expected_search_result
+        mocked_image_processor.return_value.add_and_search.return_value = expected_search_result
 
         response = post_files(client, '/api/search', {'file': BytesIO(self.image_data)})
 
         mocked_image_processor.assert_called_once_with()
-        mocked_image_processor.return_value.process.assert_called_once_with(self.image_data,
-                                                                            EMPTY_METADATA)
+        mocked_image_processor.return_value.add_and_search.assert_called_once_with(self.image_data,
+                                                                                   SourceImageMetadata(DUMMY_IMAGE_URL))
         assert response.status_code == 200
-        assert json_of_response(response) == expected_search_result
+        assert json_of_response(response) == {"data": expected_search_result,
+                                              "success": True}

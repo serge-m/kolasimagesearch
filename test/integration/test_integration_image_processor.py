@@ -114,18 +114,18 @@ class TestIntegrationImageProcessor:
         c3.DESCRIPTOR_LENGTH = 16*3
 
         processor = ImageProcessor(flush_data=True)
-        res1 = processor.process(images[0], EMPTY_METADATA)
-        assert res1[0] == []
-        assert len(res1[1]) == 1  # region from first half of the image is found
-        assert res1[1][0]["distance"] == 0
+        res1 = processor.add_and_search(images[0], EMPTY_METADATA)
+        assert res1[0]['found'] == []
+        assert len(res1[1]['found']) == 1  # region from first half of the image is found
+        assert res1[1]['found'][0]["distance"] == 0
 
-        res2 = processor.process(images[1], EMPTY_METADATA)
-        similar2_0 = res2[0]
-        similar2_1 = res2[1]
+        res2 = processor.add_and_search(images[1], EMPTY_METADATA)
+        similar2_0 = res2[0]['found']
+        similar2_1 = res2[1]['found']
         assert len(similar2_0) == 1  # one is found
         assert similar2_0[0]["distance"] == 0  # descriptors are equivalent
         assert len(similar2_1) == 1
         assert similar2_1[0]["distance"] == 3.0  # descriptors are different equivalent
 
-        res3 = processor.process(images[0], EMPTY_METADATA)
-        res4 = processor.process(images[2], EMPTY_METADATA)
+        res3 = processor.add_and_search(images[0], EMPTY_METADATA)
+        res4 = processor.add_and_search(images[2], EMPTY_METADATA)

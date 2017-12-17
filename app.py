@@ -9,18 +9,20 @@ app = Flask(__name__)
 logging.config.dictConfig(logging_config)
 logger = logging.getLogger(__name__)
 
+DUMMY_IMAGE_URL = 'https://upload.wikimedia.org/wikipedia/commons/a/ac/Peloric_Streptocarpus_flower.jpg'
+
+
 @app.route('/api/search', methods=['POST'])
 def upload_file():
     if request.method != 'POST':
         return {'message': 'Post image to this endpoint'}, 400
 
     file_content = _get_file_content(request)
-    metadata = SourceImageMetadata(path='https://upload.wikimedia.org/wikipedia/commons/a/ac/Peloric_Streptocarpus_flower.jpg')
+    metadata = SourceImageMetadata(path=DUMMY_IMAGE_URL)
     search_results = ImageProcessor().add_and_search(file_content, metadata)
     result = jsonify({'success': True, 'data': search_results})
     print(result)
     return result, 200
-
 
 
 @app.route('/api/add', methods=['POST'])

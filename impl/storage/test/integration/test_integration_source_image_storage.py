@@ -5,8 +5,8 @@ from unittest import mock
 import pytest
 from elasticsearch import Elasticsearch, RequestError, NotFoundError
 
-from impl.domain.source_image_metadata import EMPTY_METADATA
-from impl.storage.source_image_storage import SourceImageStorage, LOCATION_FIELD
+from impl.domain.source_image_metadata import EMPTY_METADATA, SourceImageMetadata
+from impl.storage.source_image_storage import SourceImageStorage, DOC_FIELD_ID_CACHED, DOC_FIELD_IMAGE_URL
 from kolasimagestorage import StorageParameters
 
 INDEX_NAME = 'test_environment_{}'.format(hashlib.md5(os.urandom(128)).hexdigest()[:12])
@@ -54,9 +54,10 @@ FILE_SERVICE_PARAMETERS = {
 @mock.patch('impl.storage.source_image_storage.config.FILE_SERVICE_PARAMETERS', new=FILE_SERVICE_PARAMETERS)
 class TestSourceImageStorageWithElastic:
     image = b"asdasdasdasd"
-    metadata = EMPTY_METADATA
+    metadata = SourceImageMetadata(path='bla')
     image_location = "some_location"
-    expected_data = {LOCATION_FIELD: image_location}
+    expected_data = {DOC_FIELD_ID_CACHED: image_location,
+                     DOC_FIELD_IMAGE_URL: 'bla'}
 
     @mock.patch('impl.storage.source_image_storage.ImageService', spec=True)
     def test_with_elastic(self, mocked_image_service, es):

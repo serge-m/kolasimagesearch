@@ -1,5 +1,5 @@
 class SourceImageMetadata:
-    def __init__(self, path:str=None):
+    def __init__(self, path: str = None):
         self._path = path
 
     def path(self):
@@ -9,5 +9,11 @@ class SourceImageMetadata:
         if isinstance(other, SourceImageMetadata):
             return self._path == other._path
         raise NotImplementedError("Comparison is not implemented for a given type")
+
+    def to_dict(self):
+        return {
+            'url': self._path
+        }
+
 
 EMPTY_METADATA = SourceImageMetadata()
