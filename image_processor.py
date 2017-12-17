@@ -6,6 +6,11 @@ from impl.processors_factory import ProcessorsFactory
 from impl.search.cleaned_search_result import CleanedSearchResult
 from impl.search.descriptor_search import DescriptorSearch
 from impl.storage.source_image_storage import SourceImageStorage
+import requests
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 
 def normalize(image: bytes) -> bytes:
@@ -21,7 +26,7 @@ class ImageProcessor:
         self._search_service = DescriptorSearch(save_data=True, flush_data=flush_data,
                                                 descriptor_shape=extractor.descriptor_shape())
 
-    def process(self, image: bytes, metadata: SourceImageMetadata) -> List[Dict[str, object]]:
+    def add_and_search(self, image: bytes, metadata: SourceImageMetadata) -> List[Dict[str, object]]:
         normalized = normalize(image)
         ref_source = self._source_image_storage.save_source_image(normalized, metadata)
         image_regions = self._feature_engine.extract_features(normalized, ref_source)
@@ -35,6 +40,16 @@ class ImageProcessor:
         ]
 
 
+    def add(self, url: str):
+        logger.info('Adding image <<{}>> to the database'.format(url))
+        image = download_image(url)
+        metadata = SourceImageMetadata(path=url)
+        normalized = normalize(image)
+        ref_source = self._source_image_storage.save_source_image(normalized, metadata)
+        self._feature_engine.extract_features(normalized, ref_source)
+
+
+
     def _get_references(self, search_result: CleanedSearchResult) -> List[Dict[str, object]]:
 
         similar = search_result.get_similar()
@@ -43,3 +58,18 @@ class ImageProcessor:
                 "source_id": x.source_id,
                 "metadata": self._source_image_storage.get_metadata_by_id(x.source_id)
                 } for x in similar]
+
+
+
+class ImageProcessorError(Exception):
+    pass
+
+
+def download_image(url: str):
+    timeout = 5
+    max_size = 3000000
+    r = requests.get(url, timeout=timeout, stream=True)
+    content = r.raw.read(max_size+1, decode_content=True)
+    if len(content) > max_size:
+            raise ImageProcessorError('File is too large')
+    return content
