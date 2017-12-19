@@ -1,4 +1,7 @@
+from io import BytesIO
 from typing import List, Dict
+
+from PIL import Image
 
 from impl.domain.source_image_metadata import SourceImageMetadata
 from impl.feature_engine.subimage_feature_engine import SubimageFeatureEngine
@@ -11,9 +14,25 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+ALLOWED_IMAGE_FORMATS = ['JPEG', 'PNG']
 
-def normalize(image: bytes) -> bytes:
-    return image
+
+class WrongImageError(Exception):
+    pass
+
+
+def normalize(binary: bytes) -> bytes:
+    stream = BytesIO(binary)
+    try:
+        image = Image.open(stream)
+    except IOError as e:
+        raise ImageProcessorError('Failed to parse file as image image') from e
+
+    if image.format not in ALLOWED_IMAGE_FORMATS:
+        raise ImageProcessorError('Image format {} is not supported. '
+                                  'Supported formats: {}'.format(image.format, ','.join(ALLOWED_IMAGE_FORMATS)))
+
+    return binary
 
 
 class ImageProcessor:
@@ -36,7 +55,7 @@ class ImageProcessor:
                 "found": self._get_references(search_result)
             }
             for region_idx, search_result in enumerate(list_results)
-            ]
+        ]
 
     def add(self, url: str):
         logger.info('Adding image <<{}>> to the database'.format(url))
@@ -65,5 +84,6 @@ def download_image(url: str):
     r = requests.get(url, timeout=timeout, stream=True)
     content = r.raw.read(max_size + 1, decode_content=True)
     if len(content) > max_size:
-        raise ImageProcessorError('File is too large')
+        raise ImageProcessorError('File is too large. url: <<{}>>'.format(url))
+
     return content

@@ -1,6 +1,9 @@
 from unittest import mock
 
-from image_processor import ImageProcessor
+import os
+import pytest
+
+from image_processor import ImageProcessor, normalize, ImageProcessorError
 from kolasimagecommon import Descriptor
 from impl.domain.source_image_metadata import SourceImageMetadata
 from impl.feature_engine.feature_extractor import HistogramFeatureExtractor
@@ -15,10 +18,16 @@ cleaned_result1 = mock.MagicMock(spec=CleanedSearchResult)
 cleaned_result1.get_similar.return_value = [DummyResult(5.0, "id1"), DummyResult(2.0, "id2")]
 cleaned_result2 = mock.MagicMock(spec=CleanedSearchResult)
 cleaned_result2.get_similar.return_value = [DummyResult(1.0, "id3")]
+current_dir_path = os.path.dirname(os.path.realpath(__file__))
+
+
+def read_image(path) -> bytes:
+    with open(path, "rb") as f:
+        return f.read()
 
 
 class TestImageProcessor:
-    image = b"encoded image"
+    image = read_image(os.path.join(current_dir_path, "test_data/test.jpg"))
     expected_normalized = image
     ref_source = "reference to stored source image"
     metadata = SourceImageMetadata()
@@ -71,3 +80,19 @@ class TestImageProcessor:
 
         descriptor_search.assert_called_once_with(descriptor_shape=(48,), save_data=True, flush_data=True)
         source_image_storage.assert_called_once_with(flush_data=True)
+
+
+class TestNormalize:
+    image_data = read_image(os.path.join(current_dir_path, "test_data/test.jpg"))
+    image_data_wrong_format = read_image(os.path.join(current_dir_path, "test_data/test.tiff"))
+
+    def test_normalize_on_wrong_data(self):
+        with pytest.raises(ImageProcessorError):
+            normalize(b'balbla')
+
+    def test_normalize_on_correct_image(self):
+        assert self.image_data == normalize(self.image_data)
+
+    def test_normalize_on_wrong_format(self):
+        with pytest.raises(ImageProcessorError):
+            normalize(self.image_data_wrong_format)
