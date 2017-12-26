@@ -20,8 +20,9 @@ class TestIntegrationElasticSearchDriver:
     def test_search_by_words_on_non_existent_index(self, index_name):
         driver = ElasticSearchDriver(index_name, "some-doc-type")
 
-        with pytest.raises(ElasticSearchDriverException):
-            driver.search_by_words({"word1": "value1", "word2": "value2"}, ["word1", "word2", "word3"])
+        search_results = driver.search_by_words({"word1": "value1", "word2": "value2"}, ["word1", "word2", "word3"])
+
+        assert search_results == []
 
     def test_search_by_words_on_empty_index(self, unique_temp_index):
         driver = ElasticSearchDriver(unique_temp_index, "some-doc-type")
@@ -54,7 +55,7 @@ class TestIntegrationElasticSearchDriver:
 
         assert doc == self.doc1
 
-    def test_get_non_existent(self, ):
+    def test_get_non_existent(self, unique_temp_index):
         driver = ElasticSearchDriver(unique_temp_index, "some-doc-type")
 
         with pytest.raises(ElasticSearchDriverException):

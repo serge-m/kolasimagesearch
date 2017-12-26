@@ -3,7 +3,7 @@ from unittest import mock
 from unittest.mock import call, ANY
 
 import pytest
-from elasticsearch import Elasticsearch, ConnectionError
+from elasticsearch import Elasticsearch, ConnectionError, TransportError
 
 from impl.storage.elastic_search_driver import ElasticSearchDriver, ElasticSearchDriverException, SearchResult
 
@@ -20,17 +20,41 @@ wrong_get_response = {'no_source_field': mocked_id}
 
 
 class TestElasticSearchDriver:
-    mocked_elastic = mock.MagicMock(Elasticsearch)
+    mocked_elastic = mock.MagicMock(Elasticsearch, indices=mock.MagicMock())
     # noinspection PyTypeChecker
     driver = ElasticSearchDriver(index, doc_type, mocked_elastic)
 
     @mock.patch('impl.storage.elastic_search_driver.Elasticsearch', spec=True)
     def test_default_driver(self, mocked_elastic):
-        mocked_elastic.return_value = mock.create_autospec(Elasticsearch)
+        elastic_client = mock.MagicMock()
+        elastic_client.indices.create.return_value = ''
+        mocked_elastic.return_value = elastic_client
 
         driver = ElasticSearchDriver(index, doc_type)
 
         assert driver._es is mocked_elastic.return_value
+        elastic_client.indices.create.assert_called_once_with(index=index)
+
+    @mock.patch('impl.storage.elastic_search_driver.Elasticsearch', spec=True)
+    def test_failing_index_creation(self, mocked_elastic):
+        elastic_client = mock.MagicMock()
+        elastic_client.indices.create.side_effect = [TransportError(500, 'unknown', 'bla')]
+        mocked_elastic.return_value = elastic_client
+
+        with pytest.raises(TransportError):
+            ElasticSearchDriver(index, doc_type)
+
+        elastic_client.indices.create.assert_called_once_with(index=index)
+
+    @mock.patch('impl.storage.elastic_search_driver.Elasticsearch', spec=True)
+    def test_constructor_with_existing_index(self, mocked_elastic):
+        elastic_client = mock.MagicMock()
+        elastic_client.indices.create.side_effect = [TransportError(234234, 'index_already_exists_exception', 'bla')]
+        mocked_elastic.return_value = elastic_client
+
+        ElasticSearchDriver(index, doc_type)
+
+        elastic_client.indices.create.assert_called_once_with(index=index)
 
     def test_non_default_driver(self):
         assert self.driver._es is self.mocked_elastic

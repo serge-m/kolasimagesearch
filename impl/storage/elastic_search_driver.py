@@ -1,7 +1,7 @@
 from typing import Dict, List
 
 import logging
-from elasticsearch import Elasticsearch, ElasticsearchException, NotFoundError
+from elasticsearch import Elasticsearch, ElasticsearchException, NotFoundError, TransportError
 from kolasimagecommon import Descriptor
 
 import config
@@ -42,6 +42,19 @@ class SearchResult:
         return NotImplementedError("Comparison not implemented for types other then SearchResult")
 
 
+def create_index_if_not_exists(es: Elasticsearch, index_name: str) -> None:
+    logger = logging.getLogger(__name__)
+    try:
+        logger.info("Trying to create index {}".format(index_name))
+        es.indices.create(index=index_name, )
+        logger.info("Index {} created".format(index_name))
+    except TransportError as e:
+        if e.error == 'index_already_exists_exception':
+            logger.info("Index {} already exists".format(index_name))
+        else:
+            raise
+
+
 class ElasticSearchDriver:
     FILED_ID = "_id"
     FILED_SOURCE = "_source"
@@ -58,6 +71,7 @@ class ElasticSearchDriver:
             self._es = elastic_search
         else:
             self._es = Elasticsearch(hosts=[config.ELASTIC_URL])
+        create_index_if_not_exists(self._es, self._index)
         self._timeout = 10
 
     def index(self, doc: dict) -> str:
