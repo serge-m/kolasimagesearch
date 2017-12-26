@@ -8,5 +8,5 @@ def save_image(param):
 
 
 class FeatureEngine:
-    def extract_features(self, image: bytes, ref_source: str) -> List[Descriptor]:
+    def extract_features(self, image: bytes) -> List[Descriptor]:
         return []

@@ -36,7 +36,7 @@ class CleanedSearchResult:
         _filtered = filter(lambda x: x.distance < self.THRESHOLD_SIMILAR, search_results)
         self._sorted = sorted(_filtered, key=lambda x: x.distance)
 
-    def has_duplicates(self) -> bool:
+    def has_good_match(self) -> bool:
         if not self._sorted:
             return False
         return self._sorted[0].distance < self.THRESHOLD_SAME
@@ -46,3 +46,6 @@ class CleanedSearchResult:
 
     def length(self):
         return len(self._sorted)
+
+    def get_query_region(self):
+        return self._query_region

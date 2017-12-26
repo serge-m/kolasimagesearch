@@ -11,7 +11,8 @@ descriptor_shape = [1, 2, 35]
 class TestRegionRepository:
     descriptor_as_list = [[1, 2, 3], [12, 12, 34]]
     descriptor1 = Descriptor(descriptor_as_list)
-    image_region = ImageRegion(descriptor1, "ref1")
+    reference_to_source = "ref1"
+    image_region = ImageRegion(descriptor1)
     expected_image_region_elastic_id = "some_image_region_elastic_id"
     serialized_dict = {"key": "value"}
     words = {"word1": "value1", "word2": "value2"}
@@ -26,7 +27,7 @@ class TestRegionRepository:
         mock_search_terms_creator.return_value.get_dictionary_of_words.return_value = self.serialized_dict
         mock_elastic_search_driver.return_value.index.return_value = self.expected_image_region_elastic_id
 
-        result = RegionRepository(descriptor_shape).save(self.image_region)
+        result = RegionRepository(descriptor_shape).save(self.image_region, self.reference_to_source)
 
         assert result == self.expected_image_region_elastic_id
         mock_search_terms_creator.assert_called_once_with(descriptor_shape)
@@ -38,7 +39,7 @@ class TestRegionRepository:
         mock_elastic_search_driver.return_value.index.assert_called_once_with(
             {'descriptor': self.descriptor_as_list,
              'key': 'value',
-             'source_id': self.image_region.source_image_reference
+             'source_id': self.reference_to_source
              }
         )
 

@@ -9,10 +9,10 @@ class SubimagesProcessor:
     def __init__(self, feature_extractor: FeatureExtractor):
         self._feature_extractor = feature_extractor
 
-    def extract_features_and_create_regions(self, subimages: List[SubImage], ref_source: str) -> List[ImageRegion]:
-        image_regions = [self._create_image_region(subimage, ref_source) for subimage in subimages]
+    def extract_features_and_create_regions(self, subimages: List[SubImage]) -> List[ImageRegion]:
+        image_regions = [self._create_image_region(subimage) for subimage in subimages]
         return image_regions
 
-    def _create_image_region(self, subimage: SubImage, ref_source: str) -> ImageRegion:
+    def _create_image_region(self, subimage: SubImage) -> ImageRegion:
         descriptor = self._feature_extractor.calculate(subimage.get_image())
-        return ImageRegion(descriptor, ref_source)
+        return ImageRegion(descriptor)

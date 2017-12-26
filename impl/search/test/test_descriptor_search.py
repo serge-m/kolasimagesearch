@@ -7,57 +7,42 @@ from impl.search.cleaned_search_result import CleanedSearchResult
 from impl.search.descriptor_search import DescriptorSearch
 from impl.storage.elastic_search_driver import SearchResult
 
-search_result1 = mock.create_autospec(CleanedSearchResult)
-search_result2 = mock.create_autospec(CleanedSearchResult)
-search_result1.has_duplicates.return_value = True
-search_result2.has_duplicates.return_value = False
+search_result = mock.create_autospec(CleanedSearchResult)
 
 
 class TestDescriptorSearch:
-    descriptor1 = Descriptor([1])
-    descriptor2 = Descriptor([20])
-
-    region1 = ImageRegion(descriptor1, "ref1")
-    region2 = ImageRegion(descriptor2, "ref2")
-    list_image_regions = [region1, region2]
+    descriptor = Descriptor([1])
+    image_region = ImageRegion(descriptor)
 
     expected_result1 = {SearchResult.FIELD_DESCRIPTOR: [1], SearchResult.FIELD_SOURCE_ID: "some_id1"}
     expected_result2 = {SearchResult.FIELD_DESCRIPTOR: [2], SearchResult.FIELD_SOURCE_ID: "some_id2"}
-    expected_result3 = {SearchResult.FIELD_DESCRIPTOR: [3], SearchResult.FIELD_SOURCE_ID: "some_id3"}
 
-    results_call_1 = [expected_result1, expected_result2]
-    results_call_2 = [expected_result3]
+    repo_find_results = [expected_result1, expected_result2]
 
-    list_search_results = [results_call_1, results_call_2]
+    descriptor_shape = (16 * 3,)
 
     @mock.patch('impl.search.descriptor_search.RegionRepository', autospec=True)
     @mock.patch('impl.search.descriptor_search.CleanedSearchResult', autospec=True)
     def test_find_similar_behaviour(self, cleaned_search_result, region_repository):
-        cleaned_search_result.side_effect = [search_result1, search_result2]
-        region_repository.return_value.find.side_effect = self.list_search_results
+        cleaned_search_result.return_value = search_result
+        region_repository.return_value.find.return_value = self.repo_find_results
 
-        similar = DescriptorSearch(save_data=True, descriptor_shape=(16*3,)).find_similar(self.list_image_regions)
+        similar = DescriptorSearch(descriptor_shape=self.descriptor_shape).find_similar_for_region(self.image_region)
 
-        assert similar == [search_result1, search_result2]
+        assert similar == search_result
         region_repository.assert_called_once_with((48,), flush_data=False)
-        region_repository.return_value.find.assert_has_calls([call(self.descriptor1),
-                                                              call(self.descriptor2)])
-        region_repository.return_value.save.assert_has_calls([call(search_result2)])
-        cleaned_search_result.assert_has_calls([call(self.region1, self.results_call_1),
-                                                call(self.region2, self.results_call_2)])
+        region_repository.return_value.find.assert_called_once_with(self.descriptor)
+        region_repository.return_value.save.assert_not_called()
+        cleaned_search_result.assert_called_once_with(self.image_region, self.repo_find_results)
 
     @mock.patch('impl.search.descriptor_search.RegionRepository', autospec=True)
-    @mock.patch('impl.search.descriptor_search.CleanedSearchResult', autospec=True)
-    def test_find_similar_without_saving(self, cleaned_search_result, region_repository):
-        cleaned_search_result.side_effect = [search_result1, search_result2]
-        region_repository.return_value.find.side_effect = self.list_search_results
+    def test_add_region(self, region_repository):
+        region_repository.return_value.save.return_value = "region_reference"
+        reference_to_source = "ref1"
 
-        similar = DescriptorSearch(save_data=False, descriptor_shape=(16*3,)).find_similar(self.list_image_regions)
+        similar = DescriptorSearch(descriptor_shape=self.descriptor_shape).add_region(self.image_region, reference_to_source)
 
-        assert similar == [search_result1, search_result2]
-        region_repository.assert_called_once_with((16*3,),flush_data=False)
-        region_repository.return_value.find.assert_has_calls([call(self.descriptor1),
-                                                              call(self.descriptor2)])
-        region_repository.return_value.save.assert_has_calls([])
-        cleaned_search_result.assert_has_calls([call(self.region1, self.results_call_1),
-                                                call(self.region2, self.results_call_2)])
+        assert similar == "region_reference"
+        region_repository.assert_called_once_with(self.descriptor_shape, flush_data=False)
+        region_repository.return_value.find.assert_not_called()
+        region_repository.return_value.save.assert_called_once_with(self.image_region, reference_to_source)

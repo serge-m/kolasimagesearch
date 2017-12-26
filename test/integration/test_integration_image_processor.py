@@ -10,7 +10,7 @@ import numpy as np
 from PIL import Image
 
 from image_processor import ImageProcessor
-from impl.domain.source_image_metadata import EMPTY_METADATA
+from impl.domain.source_image_metadata import SourceImageMetadata
 
 # noinspection PyUnresolvedReferences
 from impl.test.elastic_fixtures import unique_temp_index, another_unique_temp_index, index_name
@@ -97,7 +97,8 @@ class TestIntegrationImageProcessor:
     @mock.patch('impl.storage.source_image_storage.config')
     @mock.patch('impl.storage.region_repository.config')
     @mock.patch('impl.storage.search_words.search_terms_creator.config_descriptors')
-    def test_integration_image_processor(self, c3, c2, c, unique_temp_index, another_unique_temp_index, temp_location_for_storage):
+    def test_integration_image_processor(self, c3, c2, c, unique_temp_index, another_unique_temp_index,
+                                         temp_location_for_storage):
         c.ELASTIC_SOURCE_IMAGES_INDEX = unique_temp_index
         c.ELASTIC_SOURCE_IMAGES_TYPE = "images_" + unique_temp_index
         c.FILE_SERVICE_PARAMETERS = {
@@ -111,21 +112,24 @@ class TestIntegrationImageProcessor:
         c2.ELASTIC_DESCRIPTOR_TYPE = "descriptors_" + another_unique_temp_index
         c3.LENGTH_OF_WORD = 2
         c3.NUMBER_OF_LEVELS = 4
-        c3.DESCRIPTOR_LENGTH = 16*3
+        c3.DESCRIPTOR_LENGTH = 16 * 3
 
         processor = ImageProcessor(flush_data=True)
-        res1 = processor.add_and_search(images[0], EMPTY_METADATA)
+        res1 = processor.find_and_add_by_image(images[0], SourceImageMetadata('path1'))
         assert res1[0]['found'] == []
-        assert len(res1[1]['found']) == 1  # region from first half of the image is found
-        assert res1[1]['found'][0]["distance"] == 0
+        assert res1[1]['found'] == []
 
-        res2 = processor.add_and_search(images[1], EMPTY_METADATA)
+        res2 = processor.find_and_add_by_image(images[1], SourceImageMetadata('path2'))
         similar2_0 = res2[0]['found']
         similar2_1 = res2[1]['found']
-        assert len(similar2_0) == 1  # one is found
+        # one is found. subimages from the first query have to have the same descriptor.
+        # But they are processed independently thus can both are added
+        assert len(similar2_0) == 2
         assert similar2_0[0]["distance"] == 0  # descriptors are equivalent
-        assert len(similar2_1) == 1
+        assert similar2_0[1]["distance"] == 0  # descriptors are equivalent
+        assert len(similar2_1) == 2
         assert similar2_1[0]["distance"] == 3.0  # descriptors are different equivalent
+        assert similar2_1[1]["distance"] == 3.0  # descriptors are different equivalent
 
-        res3 = processor.add_and_search(images[0], EMPTY_METADATA)
-        res4 = processor.add_and_search(images[2], EMPTY_METADATA)
+        res3 = processor.find_and_add_by_image(images[0], SourceImageMetadata('path3'))
+        res4 = processor.find_and_add_by_image(images[2], SourceImageMetadata('path4'))

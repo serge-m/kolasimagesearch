@@ -8,7 +8,7 @@ import pytest
 from pytest import mark
 
 from app import app, DUMMY_IMAGE_URL
-from impl.domain.source_image_metadata import EMPTY_METADATA, SourceImageMetadata
+from impl.domain.source_image_metadata import SourceImageMetadata
 from kolasimagesearch.test.test_image_processor import expected_search_result
 
 current_dir_path = os.path.dirname(os.path.realpath(__file__))
@@ -60,8 +60,8 @@ class TestApp:
         assert b'Hello, World!' in response.data
 
     @mark.skip()
-    def test_post_search(self, client):
-        response = post_files(client, '/api/search', {'file': BytesIO(self.image_data)})
+    def test_post_find_and_add_by_image(self, client):
+        response = post_files(client, '/api/find_and_add', {'file': BytesIO(self.image_data)})
         assert "normalized image is saved in image storage"
         assert "source image metadata is saved in descriptor storage"
         assert "descriptors are calculated for for normalized image and stored in the descriptor storage"
@@ -69,14 +69,15 @@ class TestApp:
         assert response.status_code == 200
 
     @mock.patch('app.ImageProcessor', spec=True)
-    def test_post_search_mocked(self, mocked_image_processor, client):
-        mocked_image_processor.return_value.add_and_search.return_value = expected_search_result
+    def test_post_find_and_add_by_image_mocked(self, mocked_image_processor, client):
+        mocked_image_processor.return_value.find_and_add_by_image.return_value = expected_search_result
 
-        response = post_files(client, '/api/search', {'file': BytesIO(self.image_data)})
+        response = post_files(client, '/api/find_and_add', {'file': BytesIO(self.image_data)})
 
         mocked_image_processor.assert_called_once_with()
-        mocked_image_processor.return_value.add_and_search.assert_called_once_with(self.image_data,
-                                                                                   SourceImageMetadata(DUMMY_IMAGE_URL))
+        mocked_image_processor.return_value.find_and_add_by_image.assert_called_once_with(
+            self.image_data, SourceImageMetadata(DUMMY_IMAGE_URL)
+        )
         assert response.status_code == 200
         assert json_of_response(response) == {"data": expected_search_result,
                                               "success": True}

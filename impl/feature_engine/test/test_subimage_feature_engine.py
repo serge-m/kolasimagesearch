@@ -32,7 +32,7 @@ binary_image = b"some encoded image"
 class TestSubimageFeatureEngine:
     descriptor1 = Descriptor([1])
     descriptor2 = Descriptor([2])
-    expected_image_regions = [ImageRegion(descriptor1, "ref1"), ImageRegion(descriptor2, "ref2"), ]
+    expected_image_regions = [ImageRegion(descriptor1), ImageRegion(descriptor2), ]
     ref_source = "some reference to source"
     feature_extractor = mock.create_autospec(FeatureExtractor)
     subimage_extractor = mock.create_autospec(SubimageExtractor)
@@ -50,14 +50,14 @@ class TestSubimageFeatureEngine:
         self.subimage_extractor.extract.return_value = extracted_subimages
 
         engine = SubimageFeatureEngine(self.feature_extractor, self.subimage_extractor)
-        image_regions = engine.extract_features(binary_image, self.ref_source)
+        image_regions = engine.extract_features(binary_image)
 
         assert image_regions == self.expected_image_regions
         mocked_image_encoder.assert_called_once_with(image_format="jpeg")
         mocked_image_encoder.return_value.binary_to_array.assert_called_once_with(binary_image)
         self.subimage_extractor.extract.assert_called_once_with(whole_image)
         mocked_subimage_processor.assert_called_once_with(self.feature_extractor)
-        mocked_subimage_processor.return_value.extract_features_and_create_regions.assert_called_once_with(extracted_subimages, self.ref_source)
+        mocked_subimage_processor.return_value.extract_features_and_create_regions.assert_called_once_with(extracted_subimages)
 
 
 

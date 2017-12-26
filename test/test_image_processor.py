@@ -1,10 +1,12 @@
 from unittest import mock
+from unittest.mock import call
 
 import os
 import pytest
 
+
 from image_processor import ImageProcessor, normalize, ImageProcessorError
-from kolasimagecommon import Descriptor
+from impl.domain.image_region import ImageRegion
 from impl.domain.source_image_metadata import SourceImageMetadata
 from impl.feature_engine.feature_extractor import HistogramFeatureExtractor
 from impl.feature_engine.subimage_extractor import VerticalSplit
@@ -31,23 +33,24 @@ class TestImageProcessor:
     expected_normalized = image
     ref_source = "reference to stored source image"
     metadata = SourceImageMetadata()
-    list_descriptors = [Descriptor([1]), Descriptor([2]), Descriptor([3])]
+    list_image_regions = [ImageRegion(descriptor=1), ImageRegion(descriptor=2)]
 
     @mock.patch('image_processor.SubimageFeatureEngine', spec=True)
     @mock.patch('image_processor.DescriptorSearch', spec=True)
     @mock.patch('image_processor.SourceImageStorage', spec=True)
     def test_image_processor(self, source_image_storage, descriptor_search, feature_engine):
         source_image_storage.return_value.save_source_image.return_value = self.ref_source
-        feature_engine.return_value.extract_features.return_value = self.list_descriptors
-        descriptor_search.return_value.find_similar.return_value = [cleaned_result1, cleaned_result2]
+        feature_engine.return_value.extract_features.return_value = self.list_image_regions
+        descriptor_search.return_value.find_similar_for_region.side_effect = [cleaned_result1, cleaned_result2]
         source_image_storage.return_value.get_metadata_by_id.side_effect = [self.metadata] * 3
 
-        result = ImageProcessor().add_and_search(self.image, self.metadata)
+        result = ImageProcessor().find_and_add_by_image(self.image, self.metadata)
 
-        descriptor_search.assert_called_once_with(descriptor_shape=(16 * 3,), save_data=True, flush_data=False)
-        descriptor_search.return_value.find_similar.assert_called_once_with(self.list_descriptors)
+        descriptor_search.assert_called_once_with(descriptor_shape=(16 * 3,), flush_data=False)
+        descriptor_search.return_value.find_similar_for_region.assert_has_calls(
+            [call(region) for region in self.list_image_regions])
         feature_engine.assert_called_once_with(HistogramFeatureExtractor(), VerticalSplit())
-        feature_engine.return_value.extract_features.assert_called_once_with(self.expected_normalized, self.ref_source)
+        feature_engine.return_value.extract_features.assert_called_once_with(self.expected_normalized)
         source_image_storage.assert_called_once_with(flush_data=False)
         source_image_storage.return_value.save_source_image.assert_called_once_with(self.expected_normalized,
                                                                                     self.metadata)
@@ -73,12 +76,12 @@ class TestImageProcessor:
     @mock.patch('image_processor.SourceImageStorage', spec=True)
     def test_with_flushing_data_for_tests(self, source_image_storage, descriptor_search, feature_engine):
         source_image_storage.return_value.save_source_image.return_value = self.ref_source
-        feature_engine.return_value.extract_features.return_value = self.list_descriptors
-        descriptor_search.return_value.find_similar.return_value = expected_search_result
+        feature_engine.return_value.extract_features.return_value = self.list_image_regions
+        descriptor_search.return_value.find_similar_for_region.return_value = expected_search_result
 
         result = ImageProcessor(flush_data=True)
 
-        descriptor_search.assert_called_once_with(descriptor_shape=(48,), save_data=True, flush_data=True)
+        descriptor_search.assert_called_once_with(descriptor_shape=(48,), flush_data=True)
         source_image_storage.assert_called_once_with(flush_data=True)
 
 

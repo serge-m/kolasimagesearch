@@ -12,21 +12,31 @@ logger = logging.getLogger(__name__)
 DUMMY_IMAGE_URL = 'https://upload.wikimedia.org/wikipedia/commons/a/ac/Peloric_Streptocarpus_flower.jpg'
 
 
-@app.route('/api/search', methods=['POST'])
-def upload_file():
+@app.route('/api/find_and_add', methods=['POST'])
+def find_and_add():
     if request.method != 'POST':
         return {'message': 'Post image to this endpoint'}, 400
 
     file_content = _get_file_content(request)
     metadata = SourceImageMetadata(path=DUMMY_IMAGE_URL)
-    search_results = ImageProcessor().add_and_search(file_content, metadata)
+    search_results = ImageProcessor().find_and_add_by_image(file_content, metadata)
     result = jsonify({'success': True, 'data': search_results})
-    print(result)
+    return result, 200
+
+
+@app.route('/api/find', methods=['POST'])
+def find():
+    if request.method != 'POST':
+        return {'message': 'Post image to this endpoint'}, 400
+
+    file_content = _get_file_content(request)
+    search_results = ImageProcessor().find_by_image(file_content)
+    result = jsonify({'success': True, 'data': search_results})
     return result, 200
 
 
 @app.route('/api/add', methods=['POST'])
-def add_image():
+def add():
     json_data = request.get_json()
 
     if not json_data:
@@ -37,7 +47,7 @@ def add_image():
         return jsonify({'message': 'Unable to get url parameter from the request'}), 400
 
     try:
-        ImageProcessor().add(url)
+        ImageProcessor().add_by_url(url)
     except Exception as e:
         logger.exception('Failed to process image ')
         return jsonify({'message': 'image processing went wrong. {}'.format(e)}), 500

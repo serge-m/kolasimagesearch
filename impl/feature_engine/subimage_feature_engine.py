@@ -16,10 +16,8 @@ class SubimageFeatureEngine(FeatureEngine):
         self._subimage_processor = SubimagesProcessor(feature_extractor)
         self._image_encoder = ImageEncoder(image_format="jpeg")
 
-    def extract_features(self, image: bytes, ref_source: str) -> List[ImageRegion]:
-        logger = logging.getLogger(__name__)
-        logger.info("Extracting features for reference {}".format(ref_source))
+    def extract_features(self, image: bytes) -> List[ImageRegion]:
         decoded = self._image_encoder.binary_to_array(image)
         sub_images = self._subimage_extractor.extract(decoded)
-        image_regions = self._subimage_processor.extract_features_and_create_regions(sub_images, ref_source)
+        image_regions = self._subimage_processor.extract_features_and_create_regions(sub_images)
         return image_regions

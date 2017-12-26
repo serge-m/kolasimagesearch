@@ -25,8 +25,8 @@ class TestSubimagesProcessor:
         mocked_feature_extractor.calculate.side_effect = [descriptor1, descriptor2]
 
         processor = SubimagesProcessor(mocked_feature_extractor)
-        regions = processor.extract_features_and_create_regions([subimage1, subimage2], some_reference)
+        regions = processor.extract_features_and_create_regions([subimage1, subimage2])
 
-        assert regions == [ImageRegion(descriptor1, some_reference),
-                           ImageRegion(descriptor2, some_reference)]
+        assert regions == [ImageRegion(descriptor1),
+                           ImageRegion(descriptor2)]
         mocked_feature_extractor.calculate.assert_has_calls([call(img1), call(img2)])
