@@ -41,9 +41,18 @@ export default EmberUploader.FileField.extend({
     uploader.on('didError', (jqXHR, textStatus, errorThrown) => {
       let set_upload_results = this.get('set_upload_results');
 //      console.log("didError -> ",  jqXHR);
-//      console.log("didError -> ",  textStatus);
-//      console.log("didError -> ",  errorThrown);
-      set_upload_results(jqXHR.responseJSON);
+//      console.log("statusText            -> ",  jqXHR.statusText);
+//      console.log("didError errorThrown  -> ",  jqXHR.errorThrown);
+//      console.log("didError responseText -> ",  jqXHR.responseText);
+
+      let message = jqXHR.responseText;
+
+      set_upload_results({
+        'success': false,
+        'error': message,
+        'result': jqXHR.statusText
+      });
+
     });
   }
 });

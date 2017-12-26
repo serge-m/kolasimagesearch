@@ -29,8 +29,8 @@
             {{/each}}
         {{/each}}
     {{else}}
-        <h1>failed ({{upload_res.result}})</h1>
-        <p>Error: ({{upload_res.error}})</p>
+        <h2>Upload failed ({{upload_res.result}})</h2>
+        <p>Error: {{upload_res.error}}</p>
     {{/if}}
 {{else}}
     <p>try it out</p>

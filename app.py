@@ -66,5 +66,10 @@ def root():
     return "Hello, World!"
 
 
+@app.errorhandler(404)
+def page_not_found(e):
+    return jsonify({'success': False, 'message': 'page not found'}), 404
+
+
 if __name__ == "__main__":
     app.run()
