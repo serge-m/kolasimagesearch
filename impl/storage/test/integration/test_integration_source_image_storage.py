@@ -59,6 +59,7 @@ class TestSourceImageStorageWithElastic:
     expected_data = {DOC_FIELD_ID_CACHED: image_location,
                      DOC_FIELD_IMAGE_URL: 'bla'}
 
+    @pytest.mark.integration_elastic_search
     @mock.patch('impl.storage.source_image_storage.ImageService', spec=True)
     def test_with_elastic(self, mocked_image_service, es):
         mocked_image_service.return_value.put_encoded.return_value = self.image_location

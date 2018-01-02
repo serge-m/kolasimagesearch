@@ -7,6 +7,7 @@ from impl.test.elastic_fixtures import unique_temp_index, index_name
 
 
 # noinspection PyShadowingNames
+@pytest.mark.integration_elastic_search
 class TestIntegrationElasticSearchDriver:
     payload1 = {SearchResult.FIELD_DESCRIPTOR: [1], SearchResult.FIELD_SOURCE_ID: "some_id1"}
     payload2 = {SearchResult.FIELD_DESCRIPTOR: [2], SearchResult.FIELD_SOURCE_ID: "some_id2"}

@@ -94,6 +94,7 @@ class TestIntegrationImageProcessor:
             decoded = encoder.binary_to_array(image)
             assert np.array_equal(raw, decoded)
 
+    @pytest.mark.integration_elastic_search
     @mock.patch('impl.storage.source_image_storage.config')
     @mock.patch('impl.storage.region_repository.config')
     @mock.patch('impl.storage.search_words.search_terms_creator.config_descriptors')
