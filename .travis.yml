@@ -1,0 +1,16 @@
+language: python
+python:
+  - "3.5"
+branches:
+  only:
+  - master
+install:
+- pip install -r requirements.txt
+script:
+- |
+  python -m pytest -m "not integration_elastic_search"
+- #make clean
+
+env:
+global:
+
