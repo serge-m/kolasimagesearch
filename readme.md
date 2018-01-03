@@ -1,4 +1,7 @@
 ## Kolasimagesearch
+
+[![Build Status](https://travis-ci.org/serge-m/kolasimagesearch.svg?branch=master)](https://travis-ci.org/serge-m/kolasimagesearch)
+
 Image Search by descriptors. 
 
 Based on elasticsearch and kolasimagestorage.
