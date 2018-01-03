@@ -68,14 +68,14 @@ class TestApp:
         assert "similar image are returned to user"
         assert response.status_code == 200
 
-    @mock.patch('app.ImageProcessor', spec=True)
-    def test_post_find_and_add_by_image_mocked(self, mocked_image_processor, client):
-        mocked_image_processor.return_value.find_and_add_by_image.return_value = expected_search_result
+    @mock.patch('app.ImageProcessorFacade', spec=True)
+    def test_post_find_and_add_by_image_mocked(self, img_processor_facade, client):
+        img_processor_facade.return_value.find_and_add_by_image.return_value = expected_search_result
 
         response = post_files(client, '/api/find_and_add', {'file': BytesIO(self.image_data)})
 
-        mocked_image_processor.assert_called_once_with()
-        mocked_image_processor.return_value.find_and_add_by_image.assert_called_once_with(
+        img_processor_facade.assert_called_once_with()
+        img_processor_facade.return_value.find_and_add_by_image.assert_called_once_with(
             self.image_data, SourceImageMetadata(DUMMY_IMAGE_URL)
         )
         assert response.status_code == 200

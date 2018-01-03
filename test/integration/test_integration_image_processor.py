@@ -9,7 +9,7 @@ from unittest import mock
 import numpy as np
 from PIL import Image
 
-from image_processor import ImageProcessor
+from image_processor_facade import ImageProcessorFacade
 from impl.domain.source_image_metadata import SourceImageMetadata
 
 # noinspection PyUnresolvedReferences
@@ -98,24 +98,26 @@ class TestIntegrationImageProcessor:
     @mock.patch('impl.storage.source_image_storage.config')
     @mock.patch('impl.storage.region_repository.config')
     @mock.patch('impl.storage.search_words.search_terms_creator.config_descriptors')
-    def test_integration_image_processor(self, c3, c2, c, unique_temp_index, another_unique_temp_index,
+    def test_integration_image_processor(self,
+                                         config_descr, config_region, config_src,
+                                         unique_temp_index, another_unique_temp_index,
                                          temp_location_for_storage):
-        c.ELASTIC_SOURCE_IMAGES_INDEX = unique_temp_index
-        c.ELASTIC_SOURCE_IMAGES_TYPE = "images_" + unique_temp_index
-        c.FILE_SERVICE_PARAMETERS = {
+        config_src.ELASTIC_SOURCE_IMAGES_INDEX = unique_temp_index
+        config_src.ELASTIC_SOURCE_IMAGES_TYPE = "images_" + unique_temp_index
+        config_src.FILE_SERVICE_PARAMETERS = {
             "driver_name": "local",
             "storage_driver_parameters": {
                 "key": temp_location_for_storage,
             },
             "container_name": "container",
         }
-        c2.ELASTIC_DESCRIPTOR_INDEX = another_unique_temp_index
-        c2.ELASTIC_DESCRIPTOR_TYPE = "descriptors_" + another_unique_temp_index
-        c3.LENGTH_OF_WORD = 2
-        c3.NUMBER_OF_LEVELS = 4
-        c3.DESCRIPTOR_LENGTH = 16 * 3
+        config_region.ELASTIC_DESCRIPTOR_INDEX = another_unique_temp_index
+        config_region.ELASTIC_DESCRIPTOR_TYPE = "descriptors_" + another_unique_temp_index
+        config_descr.LENGTH_OF_WORD = 2
+        config_descr.NUMBER_OF_LEVELS = 4
+        config_descr.DESCRIPTOR_LENGTH = 16 * 3
 
-        processor = ImageProcessor(flush_data=True)
+        processor = ImageProcessorFacade(flush_data=True)
         res1 = processor.find_and_add_by_image(images[0], SourceImageMetadata('path1'))
         assert res1[0]['found'] == []
         assert res1[1]['found'] == []
@@ -134,3 +136,48 @@ class TestIntegrationImageProcessor:
 
         res3 = processor.find_and_add_by_image(images[0], SourceImageMetadata('path3'))
         res4 = processor.find_and_add_by_image(images[2], SourceImageMetadata('path4'))
+
+    @pytest.mark.integration_elastic_search
+    @mock.patch('impl.storage.source_image_storage.config')
+    @mock.patch('impl.storage.region_repository.config')
+    @mock.patch('impl.storage.search_words.search_terms_creator.config_descriptors')
+    def test_integration_add_and_find(self,
+                                         config_descr, config_region, config_src,
+                                         unique_temp_index, another_unique_temp_index,
+                                         temp_location_for_storage):
+        config_src.ELASTIC_SOURCE_IMAGES_INDEX = unique_temp_index
+        config_src.ELASTIC_SOURCE_IMAGES_TYPE = "images_" + unique_temp_index
+        config_src.FILE_SERVICE_PARAMETERS = {
+            "driver_name": "local",
+            "storage_driver_parameters": {
+                "key": temp_location_for_storage,
+            },
+            "container_name": "container",
+        }
+        config_region.ELASTIC_DESCRIPTOR_TYPETOR_INDEX = another_unique_temp_index
+        config_region.ELASTIC_DESCRIPTOR_TYPE = "descriptors_" + another_unique_temp_index
+        config_descr.LENGTH_OF_WORD = 2
+        config_descr.NUMBER_OF_LEVELS = 4
+        config_descr.DESCRIPTOR_LENGTH = 16 * 3
+
+        processor = ImageProcessorFacade(flush_data=True)
+        res1 = processor.add_by_image(images[0], SourceImageMetadata('path1'))
+        assert res1[0]['found'] == []
+        assert res1[1]['found'] == []
+
+        res2 = processor.find_and_add_by_image(images[1], SourceImageMetadata('path2'))
+        similar2_0 = res2[0]['found']
+        similar2_1 = res2[1]['found']
+        # one is found. subimages from the first query have to have the same descriptor.
+        # But they are processed independently thus can both are added
+        assert len(similar2_0) == 2
+        assert similar2_0[0]["distance"] == 0  # descriptors are equivalent
+        assert similar2_0[1]["distance"] == 0  # descriptors are equivalent
+        assert len(similar2_1) == 2
+        assert similar2_1[0]["distance"] == 3.0  # descriptors are different equivalent
+        assert similar2_1[1]["distance"] == 3.0  # descriptors are different equivalent
+
+        res3 = processor.find_and_add_by_image(images[0], SourceImageMetadata('path3'))
+        res4 = processor.find_and_add_by_image(images[2], SourceImageMetadata('path4'))
+
+

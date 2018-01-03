@@ -44,7 +44,7 @@ class TestImageProcessor:
         descriptor_search.return_value.find_similar_for_region.side_effect = [cleaned_result1, cleaned_result2]
         source_image_storage.return_value.get_metadata_by_id.side_effect = [self.metadata] * 3
 
-        result = ImageProcessor().find_and_add_by_image(self.image, self.metadata)
+        result = ImageProcessor().build_search(self.image, self.metadata, save=True)
 
         descriptor_search.assert_called_once_with(descriptor_shape=(16 * 3,), flush_data=False)
         descriptor_search.return_value.find_similar_for_region.assert_has_calls(
@@ -79,7 +79,7 @@ class TestImageProcessor:
         feature_engine.return_value.extract_features.return_value = self.list_image_regions
         descriptor_search.return_value.find_similar_for_region.return_value = expected_search_result
 
-        result = ImageProcessor(flush_data=True)
+        ImageProcessor(flush_data=True)
 
         descriptor_search.assert_called_once_with(descriptor_shape=(48,), flush_data=True)
         source_image_storage.assert_called_once_with(flush_data=True)

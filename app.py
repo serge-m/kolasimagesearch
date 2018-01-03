@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify
 
-from image_processor import ImageProcessor
+from image_processor_facade import ImageProcessorFacade
 from impl.domain.source_image_metadata import SourceImageMetadata
 import logging.config
 from logging_config import logging_config
@@ -19,7 +19,7 @@ def find_and_add():
 
     file_content = _get_file_content(request)
     metadata = SourceImageMetadata(path=DUMMY_IMAGE_URL)
-    search_results = ImageProcessor().find_and_add_by_image(file_content, metadata)
+    search_results = ImageProcessorFacade().find_and_add_by_image(file_content, metadata)
     result = jsonify({'success': True, 'data': search_results})
     return result, 200
 
@@ -30,7 +30,7 @@ def find():
         return {'message': 'Post image to this endpoint'}, 400
 
     file_content = _get_file_content(request)
-    search_results = ImageProcessor().find_by_image(file_content)
+    search_results = ImageProcessorFacade().find_by_image(file_content)
     result = jsonify({'success': True, 'data': search_results})
     return result, 200
 
@@ -47,7 +47,7 @@ def add():
         return jsonify({'message': 'Unable to get url parameter from the request'}), 400
 
     try:
-        ImageProcessor().add_by_url(url)
+        ImageProcessorFacade().add_by_url(url)
     except Exception as e:
         logger.exception('Failed to process image ')
         return jsonify({'message': 'image processing went wrong. {}'.format(e)}), 500
