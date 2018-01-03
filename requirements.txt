@@ -1,6 +1,7 @@
-py>=1.4.33
-pytest>=3.0.7
-kolasimagestorage>=0.0.2
-kolasimagecommon>=0.0.4
-numpy
-elasticsearch
+py==1.5.2
+pytest==3.3.1
+-e git+https://github.com/serge-m/kolasimagecommon.git#egg=kolasimagecommon >=0.0.4
+-e git+https://github.com/serge-m/kolasimagestorage.git#egg=kolasimagestorage >=0.0.2
+numpy==1.13.3
+elasticsearch==6.0.0
+flask==0.12.2
