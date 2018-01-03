@@ -18,8 +18,10 @@ expected_search_result = {"results": [{"something": "value"}, {"something2": "va
 DummyResult = namedtuple("DummyResult", ["distance", "source_id"])
 cleaned_result1 = mock.MagicMock(spec=CleanedSearchResult)
 cleaned_result1.get_similar.return_value = [DummyResult(5.0, "id1"), DummyResult(2.0, "id2")]
+cleaned_result1.has_good_match.return_value = True
 cleaned_result2 = mock.MagicMock(spec=CleanedSearchResult)
 cleaned_result2.get_similar.return_value = [DummyResult(1.0, "id3")]
+cleaned_result2.has_good_match.return_value = True
 current_dir_path = os.path.dirname(os.path.realpath(__file__))
 
 
@@ -54,22 +56,8 @@ class TestImageProcessor:
         source_image_storage.assert_called_once_with(flush_data=False)
         source_image_storage.return_value.save_source_image.assert_called_once_with(self.expected_normalized,
                                                                                     self.metadata)
-        assert result == [
-            {
-                'found': [
-                    {"distance": 5.0, "source_id": "id1", "metadata": self.metadata.to_dict()},
-                    {"distance": 2.0, "source_id": "id2", "metadata": self.metadata.to_dict()},
-                ],
-                'region': 0
-            },
-            {
-                'found': [
-                    {"distance": 1.0, "source_id": "id3", "metadata": self.metadata.to_dict()},
-                ],
-                'region': 1
-            }
+        assert result == [cleaned_result1, cleaned_result2]
 
-        ]
 
     @mock.patch('image_processor.SubimageFeatureEngine', spec=True)
     @mock.patch('image_processor.DescriptorSearch', spec=True)

@@ -10,7 +10,6 @@ logger = logging.getLogger(__name__)
 ALLOWED_IMAGE_FORMATS = ['JPEG', 'PNG']
 
 
-
 class ImageProcessorFacade:
     def __init__(self, flush_data=False):
         self.image_processor = ImageProcessor(flush_data=flush_data)
@@ -19,13 +18,16 @@ class ImageProcessorFacade:
         list_search_results = self.image_processor.build_search(image, metadata=EMPTY_METADATA, save=False)
         return self.image_processor.build_search_output(list_search_results)
 
-    def find_by_url(self, url: str):
+    def find_by_url(self, url: str) -> List[Dict[str, object]]:
         image = download_image(url)
-        return self.image_processor.find_by_image(image)
+        return self.find_by_image(image)
 
     def add_by_url(self, url: str):
         image = download_image(url)
         metadata = SourceImageMetadata(path=url)
+        self.image_processor.build_search(image, metadata, save=True)
+
+    def add_by_image(self, image: bytes, metadata: SourceImageMetadata):
         self.image_processor.build_search(image, metadata, save=True)
 
     def find_and_add_by_url(self, url: str) -> List[Dict]:
