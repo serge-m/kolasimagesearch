@@ -6,11 +6,14 @@ from io import BytesIO
 from typing import List
 from unittest import mock
 
+import os
 import numpy as np
 from PIL import Image
 
 from image_processor_facade import ImageProcessorFacade
 from impl.domain.source_image_metadata import SourceImageMetadata
+from unittest.mock import ANY
+
 
 # noinspection PyUnresolvedReferences
 from impl.test.elastic_fixtures import unique_temp_index, another_unique_temp_index, index_name
@@ -90,6 +93,10 @@ images = [numpy_to_binary(raw) for raw in raw_images]
 def found_result(distance_3, saved_source_id, url):
     return {'metadata': {'url': url}, 'source_id': saved_source_id, 'distance': distance_3}
 
+
+def load_image(path):
+    with open(path, "rb") as f:
+        return f.read()
 
 class TestIntegrationImageProcessor:
     def test_codec_preserves_images_to_make_results_reproducible(self):
@@ -222,3 +229,93 @@ class TestIntegrationImageProcessor:
                 ]
             }
         ]
+
+
+    @pytest.mark.integration_elastic_search
+    @mock.patch('impl.storage.source_image_storage.config')
+    @mock.patch('impl.storage.region_repository.config')
+    @mock.patch('impl.storage.search_words.search_terms_creator.config_descriptors')
+    def test_integration_with_real_images(self,
+                                      config_descr, config_region, config_src,
+                                      unique_temp_index, another_unique_temp_index,
+                                      temp_location_for_storage):
+        config_src.ELASTIC_SOURCE_IMAGES_INDEX = unique_temp_index
+        config_src.ELASTIC_SOURCE_IMAGES_TYPE = "images_" + unique_temp_index
+        config_src.FILE_SERVICE_PARAMETERS = {
+            "driver_name": "local",
+            "storage_driver_parameters": {
+                "key": temp_location_for_storage,
+            },
+            "container_name": "container",
+        }
+        config_region.ELASTIC_DESCRIPTOR_INDEX = another_unique_temp_index
+        config_region.ELASTIC_DESCRIPTOR_TYPE = "descriptors_" + another_unique_temp_index
+        config_descr.LENGTH_OF_WORD = 2
+        config_descr.NUMBER_OF_LEVELS = 4
+        config_descr.DESCRIPTOR_LENGTH = 16 * 3
+
+        dir_path = os.path.dirname(os.path.realpath(__file__))
+        dir_test_images = os.path.join(dir_path, "..", "test_data")
+        img0 = load_image(os.path.join(dir_test_images, "test.jpg"))
+        img0small = load_image(os.path.join(dir_test_images, "test_small.jpg"))
+        img1 = load_image(os.path.join(dir_test_images, "young-couple-1504475_640.jpg"))
+        processor = ImageProcessorFacade(flush_data=True)
+        url = 'path1'
+        processor.add_by_image(img0, SourceImageMetadata(url))
+
+        res2 = processor.find_by_image(img0)
+        saved_source_id = res2[0]['found'][0]['source_id']
+        assert res2 == [
+            {
+                'region': 0,
+                'found': [
+                    found_result(0.0, saved_source_id, url),
+                    found_result(ANY, saved_source_id, url)
+                ]
+            },
+            {
+                'region': 1,
+                'found': [
+                    found_result(0.0, saved_source_id, url),
+                    found_result(ANY, saved_source_id, url)
+                ]
+            }
+        ]
+
+        res3 = processor.find_by_image(img0small)
+        assert res3 == [
+            {
+                'region': 0,
+                'found': [
+                    found_result(ANY, saved_source_id, url),
+                    found_result(ANY, saved_source_id, url)
+                ]
+            },
+            {
+                'region': 1,
+                'found': [
+                    found_result(ANY, saved_source_id, url),
+                    found_result(ANY, saved_source_id, url)
+                ]
+            }
+        ]
+
+        res4 = processor.find_by_image(img1)
+        assert res4 == [
+            {
+                'region': 0,
+                'found': [
+                    found_result(ANY, saved_source_id, url),
+                    found_result(ANY, saved_source_id, url)
+                ]
+            },
+            {
+                'region': 1,
+                'found': [
+                    found_result(ANY, saved_source_id, url),
+                    found_result(ANY, saved_source_id, url)
+                ]
+            }
+        ]
+
+
