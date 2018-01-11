@@ -6,12 +6,12 @@ branches:
   - master
 install:
 - echo "installing"
+services:
+  - elasticsearch
 script:
 - |
   pip install -r requirements.txt
   python -m pytest -m "not integration_elastic_search"
-- #make clean
-
 env:
 global:
 
