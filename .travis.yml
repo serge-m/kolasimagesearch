@@ -11,7 +11,7 @@ services:
 script:
 - |
   pip install -r requirements.txt
-  python -m pytest -m "not integration_elastic_search"
+  python -m pytest
 env:
 global:
 
