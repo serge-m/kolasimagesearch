@@ -4,11 +4,10 @@ from unittest.mock import call
 import os
 import pytest
 
-
 from image_processor import ImageProcessor, normalize, ImageProcessorError
 from impl.domain.image_region import ImageRegion
 from impl.domain.source_image_metadata import SourceImageMetadata
-from impl.feature_engine.feature_extractor import HistogramFeatureExtractor
+from impl.feature_engine.histogram_feature_extractor import HistogramFeatureExtractor
 from impl.feature_engine.subimage_extractor import VerticalSplit
 from impl.search.cleaned_search_result import CleanedSearchResult
 from collections import namedtuple
@@ -57,7 +56,6 @@ class TestImageProcessor:
         source_image_storage.return_value.save_source_image.assert_called_once_with(self.expected_normalized,
                                                                                     self.metadata)
         assert result == [cleaned_result1, cleaned_result2]
-
 
     @mock.patch('image_processor.SubimageFeatureEngine', spec=True)
     @mock.patch('image_processor.DescriptorSearch', spec=True)

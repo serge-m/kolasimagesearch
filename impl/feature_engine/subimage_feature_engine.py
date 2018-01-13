@@ -1,9 +1,7 @@
 from typing import List
 
-import logging
-
 from impl.domain.image_region import ImageRegion
-from impl.feature_engine.feature_extractor import FeatureExtractor
+from impl.feature_engine.histogram_feature_extractor import FeatureExtractor
 from impl.feature_engine.subimage_extractor import SubimageExtractor
 from impl.feature_engine.subimage_processor import SubimagesProcessor
 from impl.feature_engine.feature_engine import FeatureEngine

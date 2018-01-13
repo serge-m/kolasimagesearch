@@ -5,7 +5,7 @@ import numpy as np
 import pytest
 
 from kolasimagecommon import Descriptor
-from impl.feature_engine.feature_extractor import HistogramFeatureExtractor, calculate_histogram_1d, \
+from impl.feature_engine.histogram_feature_extractor import HistogramFeatureExtractor, calculate_histogram_1d, \
     HistogramBasedFeatureExtractorException
 
 whole_image = np.random.random(size=[10, 20, 3])
@@ -44,17 +44,17 @@ class TestHistogramFeatureExtractor:
         assert histo.vector.shape == (EXPECTED_1D_HISTO_LENGTH * 3,)
 
     def test_for_3_channel(self):
-        with mock.patch('impl.feature_engine.feature_extractor.calculate_histogram_1d', new=self.mocked_calc_histo_1d):
+        with mock.patch('impl.feature_engine.histogram_feature_extractor.calculate_histogram_1d', new=self.mocked_calc_histo_1d):
             histo = HistogramFeatureExtractor().calculate(self.test_image)
         assert np.allclose(histo.vector, np.array([0.1, 1, 0.2, 1, 1, 1]))
 
     def test_for_1_channel(self):
-        with mock.patch('impl.feature_engine.feature_extractor.calculate_histogram_1d', new=self.mocked_calc_histo_1d):
+        with mock.patch('impl.feature_engine.histogram_feature_extractor.calculate_histogram_1d', new=self.mocked_calc_histo_1d):
             histo = HistogramFeatureExtractor().calculate(self.test_image_1d)
         assert np.allclose(histo.vector, [0.1, 1] * 3)
 
     def test_for_2d_image(self):
-        with mock.patch('impl.feature_engine.feature_extractor.calculate_histogram_1d', new=self.mocked_calc_histo_1d):
+        with mock.patch('impl.feature_engine.histogram_feature_extractor.calculate_histogram_1d', new=self.mocked_calc_histo_1d):
             histo = HistogramFeatureExtractor().calculate(self.channel1)
         assert np.allclose(histo.vector, [0.1, 1] * 3)
 
