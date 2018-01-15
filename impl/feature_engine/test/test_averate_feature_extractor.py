@@ -2,26 +2,23 @@ import numpy as np
 
 from impl.feature_engine.average_feature_extractor import AverageFeatureExtractor
 
-whole_image = np.random.random(size=[10, 20, 3])
-EXPECTED_1D_HISTO_LENGTH = 16
-
 
 def test_average_feature_extractor_with_one_channel():
-    channel1 = np.array([[1, 3]])
+    image_1_channel = np.array([[1, 3]])
 
     extractor = AverageFeatureExtractor()
-    result = extractor.calculate(channel1)
+    result = extractor.calculate(image_1_channel)
 
     assert np.allclose(result.vector * 255, (2.0, 2.0, 2.0))
 
 
 def test_average_feature_extractor_with_three_channels():
-    channel1 = np.array([[
+    image_3_channel = np.array([[
         [1, 0, 100],
         [3, 0, 200]
     ]])
 
     extractor = AverageFeatureExtractor()
-    result = extractor.calculate(channel1)
+    result = extractor.calculate(image_3_channel)
 
     assert np.allclose(result.vector * 255, (2.0, 0.0, 150))
