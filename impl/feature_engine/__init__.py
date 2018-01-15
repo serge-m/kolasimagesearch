@@ -1,2 +1,1 @@
-from .subimage_extractor import VerticalSplit
-from .histogram_feature_extractor import HistogramFeatureExtractor
+

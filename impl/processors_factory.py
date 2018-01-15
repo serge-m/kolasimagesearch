@@ -8,23 +8,24 @@ from kolasimagecommon import SubimageExtractor
 import config as default_config
 
 
-def load_class_from_module(module_path: str, target_class: type) -> type:
+def load_class_from_module(class_path: str, target_class: type) -> type:
+    module_path = _get_module_path(class_path)
+    class_name = _get_class_name(class_path)
     module = importlib.import_module(module_path)
-    list_classes = get_all_classes_implementing_interface(module, target_class)
-    if not list_classes:
-        raise RuntimeError("Unable to find implemented interface {} in {}".format(target_class, module_path))
-    if len(list_classes) > 1:
-        raise RuntimeError("More then 1 implementation of {} was found in {}".format(target_class, module_path))
-    return list_classes[0]
+    loaded_class = getattr(module, class_name)
+    if not loaded_class:
+        raise RuntimeError("Unable to find class {} in {}".format(class_name, module_path))
+    if not issubclass(loaded_class, target_class):
+        raise RuntimeError("Class {} must implement {}".format(class_path, target_class))
+    return loaded_class
 
 
-def get_all_classes_implementing_interface(module, target_class: type) -> List[type]:
-    results = []
-    for attr in dir(module):
-        cls = getattr(module, attr)
-        if isinstance(cls, type) and issubclass(cls, target_class):
-            results.append(cls)
-    return results
+def _get_module_path(class_path):
+    return '.'.join(class_path.split('.')[:-1])
+
+
+def _get_class_name(class_path):
+    return class_path.split('.')[-1]
 
 
 class ProcessorsFactory:

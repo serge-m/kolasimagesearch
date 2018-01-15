@@ -10,7 +10,7 @@ from kolasimagecommon import FeatureExtractor
 class AverageFeatureExtractor(FeatureExtractor):
     def calculate(self, image: np.ndarray) -> Descriptor:
         channels = get_channels(image)
-        average_per_channel = [np.mean(channel)/255. for channel in channels]
+        average_per_channel = [np.mean(channel) / 255. for channel in channels]
         descriptor = Descriptor(vector=np.array(average_per_channel))
         return descriptor
 
@@ -21,3 +21,6 @@ class AverageFeatureExtractor(FeatureExtractor):
         if isinstance(other, AverageFeatureExtractor):
             return True
         return False
+
+
+__all__ = [AverageFeatureExtractor]

@@ -17,8 +17,10 @@ ELASTIC_REGIONS_TYPE = "regions"
 ELASTIC_DESCRIPTOR_INDEX = "index"
 ELASTIC_DESCRIPTOR_TYPE = "descriptors"
 
-FEATURE_EXTRACTOR_MODULE = os.environ.get("feature_extractor", "impl.feature_engine")
-SUBIMAGE_EXTRACTOR_MODULE = os.environ.get("subimage_extractor", "impl.feature_engine")
+FEATURE_EXTRACTOR_MODULE = os.environ.get("feature_extractor",
+                                          "impl.feature_engine.histogram_feature_extractor.HistogramFeatureExtractor")
+SUBIMAGE_EXTRACTOR_MODULE = os.environ.get("subimage_extractor",
+                                           "impl.feature_engine.subimage_extractor.VerticalSplit")
 
 FEATURE_EXTRACTOR_PARAMETERS = json.loads(os.environ.get("feature_extractor_params", "{}"))
 SUBIMAGE_EXTRACTOR_PARAMETERS = json.loads(os.environ.get("subimage_extractor_params", "{}"))
