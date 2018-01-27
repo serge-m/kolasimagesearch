@@ -10,6 +10,7 @@ Router.map(function() {
   this.route('users');
   this.route('searchresults');
   this.route('upload');
+  this.route('searchbyurl');
 });
 
 export default Router;

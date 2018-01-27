@@ -1,0 +1,44 @@
+{{outlet}}
+
+
+<p>-----------------------</p>
+
+
+<form {{action "addByUrl" on="submit"}}>
+    {{input type="text" value=foobar}}
+    <button type="submit">Add By URL</button>
+</form>
+
+<p>-----------------------</p>
+
+<form {{action "findByUrl" on="subit"}}>
+    {{input type="text" value=foobar}}
+    <button type="submit">Find By URL</button>
+</form>
+
+
+{{#if upload_res}}
+    {{#if upload_res.success}}
+        {{#each upload_res.data as |region_results|}}
+            <h3>Results for region {{region_results.region}}</h3>
+            {{similar_region.found}}
+            {{#each region_results.found as |similar_region|}}
+                <div>
+                    <p>distance={{similar_region.distance}}</p>
+                    {{#if similar_region.metadata.url}}
+                        <a href="{{similar_region.metadata.url}}">
+                            <img src="{{similar_region.metadata.url}}" width="200" height="200"/>
+                        </a>
+                    {{else}}
+                        <p>image missing</p>
+                    {{/if}}
+                </div>
+            {{/each}}
+        {{/each}}
+    {{else}}
+        <h2>Upload failed ({{upload_res.result}})</h2>
+        <p>Error: {{upload_res.error}}</p>
+    {{/if}}
+{{else}}
+    <p>try it out</p>
+{{/if}}
