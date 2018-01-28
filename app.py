@@ -59,13 +59,13 @@ def add_by_url():
 def find_by_url():
     url = _get_url_from_request(request)
     try:
-        ImageProcessorFacade().find_by_url(url)
+        search_results = ImageProcessorFacade().find_by_url(url)
     except Exception as e:
         logger.exception('Failed to process image ')
         raise ProcessingError('image processing went wrong. {}'.format(e)) from e
 
-    return jsonify({'success': True}), 200
-
+    result = jsonify({'success': True, 'data': search_results})
+    return result, 200
 
 
 def _get_url_from_request(request) -> str:
