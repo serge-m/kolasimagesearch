@@ -23,11 +23,11 @@
             <h3>Results for region {{region_results.region}}</h3>
             {{similar_region.found}}
             {{#each region_results.found as |similar_region|}}
-                <div>
+                <div class="result_element">
                     <p>distance={{similar_region.distance}}</p>
                     {{#if similar_region.metadata.url}}
                         <a href="{{similar_region.metadata.url}}">
-                            <img src="{{similar_region.metadata.url}}" width="200" height="200"/>
+                            <img src="{{similar_region.metadata.url}}" class="result_image"/>
                         </a>
                     {{else}}
                         <p>image missing</p>

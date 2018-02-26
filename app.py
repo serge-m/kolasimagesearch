@@ -78,7 +78,7 @@ def _get_url_from_request(request) -> str:
         url = json_data['url']
     except KeyError as e:
         raise Exception('Unable to get url parameter from the request') from e
-
+    logger.info('Decoded url "{}" from json request'.format(url))
     return url
 
 def _get_file_content(flask_request) -> bytes:

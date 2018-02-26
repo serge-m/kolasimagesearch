@@ -1,0 +1,13 @@
+.result_element {
+    // background-color: black;
+    margin: 0 0 8px 8px;
+    display: inline-block;
+    vertical-align: bottom;
+}
+
+
+.result_image {
+    height: 200px;
+}
+
+
